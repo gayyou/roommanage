@@ -1,0 +1,182 @@
+<style lang="scss" scoped>
+@import "scss/mixin";
+.edit-package-container {
+  position: relative;
+  width:720px;
+  height:480px;
+  background:rgba(255,255,255,1);
+  box-shadow:0px 3px 6px rgba(0,0,0,0.16);
+  opacity:1;
+  border-radius:8px;
+  padding: 0 20px 0 20px;
+
+  .list-container {
+    position: relative;
+    display: flex;
+    overflow: hidden;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    position: relative;
+    width: 100%;
+    height: 370px;
+  }
+
+  .button-container {
+    @include flex-center;
+    position: relative;
+    width: 100%;
+    height: 40px;
+  }
+}
+</style>
+
+<template>
+  <global-layer>
+    <div class="edit-package-container">
+      <float-layer-header
+        :name="title"
+        @on-close="closeLayer"
+        @on-search="searchHandler"
+      ></float-layer-header>
+      <div class="list-container">
+        <el-scrollbar>
+          <small-custom-table
+            :data="displayData"
+            :columns="columns"
+          ></small-custom-table>
+        </el-scrollbar>
+      </div>
+      <div class="button-container">
+        <Button
+          type="primary"
+          @click="closeLayer"
+        >关闭</Button>
+      </div>
+    </div>
+  </global-layer>
+</template>
+
+<script lang="ts">
+import Vue from 'vue'
+import Component from 'vue-class-component';
+import GlobalLayer from "@/components/globalLayer/GlobalLayer.vue";
+import FloatLayerHeader from "@/components/floatLayerHeader/FloatLayerHeader.vue";
+import {packageManage} from "@/store/modules/PackageManage";
+import {Prop} from "vue-property-decorator";
+import {operationFailMsg} from "@/utils/shared/message";
+import SmallCustomTable from "@/components/smallCustomTable/SmallCustomTable.vue";
+
+@Component({
+  components: {SmallCustomTable, FloatLayerHeader, GlobalLayer}
+})
+export default class BuyList extends Vue {
+  @Prop(String) mealId!: number;
+
+  title: string = '套餐办理情况';
+
+  displayData: {
+    userName: string;
+    phone: string;
+    resultDays: number;
+    usedCount: number;
+    status: string;
+  }[] = [
+
+  ];
+
+  cacheData: {
+    userName: string;
+    phone: string;
+    resultDays: number;
+    usedCount: number;
+    status: string;
+  }[] = [];
+
+  columns: any[] = [
+    {
+      title: '用户名',
+      key: 'userName'
+    },
+    {
+      title: '电话',
+      key: 'phone'
+    },
+    {
+      title: '剩余天数',
+      key: 'resultDays'
+    },
+    {
+      title: '使用次数',
+      key: 'usedCount'
+    },
+    {
+      title: '状态',
+      key: 'status'
+    }
+  ];
+
+  searchValue: string = '';
+
+  closeLayer() {
+    this.$emit('on-close');
+  }
+
+  searchHandler(value: string) {
+    this.searchValue = value;
+    this.filterData();
+  }
+
+  filterData() {
+    this.displayData = [];
+    for (let i = 0; i < this.cacheData.length; i++) {
+      let item = this.cacheData[i];
+      if (item.userName.indexOf(this.searchValue) != -1
+        || item.phone.indexOf(this.searchValue) != -1
+        || item.status.indexOf(this.searchValue) != -1) {
+        this.displayData.push(item);
+      }
+    }
+  }
+
+  saveList(list: {
+    name: string;
+    tel: string;
+    usedTimes: number;
+    rareDays: number;
+    status: string;
+  }[]) {
+    this.cacheData = [];
+    for (let i = 0; i < list.length; i++) {
+      let item = list[i];
+      this.cacheData.push({
+        status: item.status,
+        phone: item.tel,
+        usedCount: item.usedTimes,
+        resultDays: item.rareDays,
+        userName: item.name
+      });
+    }
+    this.filterData();
+  }
+
+  created() {
+    packageManage.getPackageHistory({
+      mealId: this.mealId
+    }).then(res => {
+      if (res.isSuccess) {
+        this.saveList(res.data);
+      } else {
+        operationFailMsg('获取')
+      }
+    });
+  }
+
+  beforeMount() {
+    let screenWidth: number = window.screen.availWidth;
+    let tableWidthList: number[] = [100, 150, 150, 148, 130];  // 总的680
+    for (let i = 0; i < this.columns.length; i++) {
+      this.columns[i].width = tableWidthList[i] * (screenWidth / 1920);
+    }
+  }
+}
+</script>
