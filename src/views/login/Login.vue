@@ -82,6 +82,7 @@ import {userManage} from "@/store/modules/UserManage";
 import {operationFailMsg} from "@/utils/shared/message";
 import {getUserName, setUserName} from "@/utils/shared/localStorage";
 import {isUndef, limitString} from "@/utils/shared";
+import {changeTitle} from "@/utils/shared/routeUitl";
 
 @Component
 export default class Login extends Vue {
@@ -136,6 +137,7 @@ export default class Login extends Vue {
     if (!isUndef(getUserName())) {
       this.account = getUserName() || '';
     }
+    changeTitle('登陆');
   }
 }
 </script>

@@ -112,7 +112,7 @@ class OrderManage extends VuexModule {
           status: item.orderStatus,
           userName: item.name,
           phone: item.tel
-        })
+        });
       }
       this.setRechargeList(rechargeList);
     }

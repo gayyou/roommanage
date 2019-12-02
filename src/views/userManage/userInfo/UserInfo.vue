@@ -1,5 +1,6 @@
 <style lang="scss" scoped>
 @import "scss/mixin";
+@import "scss/shared";
 .package-manage-container {
   position: relative;
   width: 100%;
@@ -17,7 +18,7 @@
 <template>
   <div class="package-manage-container">
     <custom-header
-      name="套餐管理"
+      name="用户管理"
       :no-slot="true"
       @on-search="searchUser"
       @on-add="addUser"
@@ -90,6 +91,10 @@
       :user-name="buyListManage.userName"
       @on-close="closeBuyListLayer"
     ></buy-list>
+    <Spin size="large" fix v-if="pageIsLoading">
+      <Icon type="ios-loading" size=18 class="demo-spin-icon-load"></Icon>
+      <div>正在获取数据...</div>
+    </Spin>
   </div>
 </template>
 
@@ -202,6 +207,8 @@ export default class UserInfo extends Vue {
 
   page: number = 1;
 
+  pageIsLoading: boolean = false;
+
   buyListManage: any = {
     isShow: false,
     userId: -1,
@@ -309,7 +316,9 @@ export default class UserInfo extends Vue {
   }
 
   getUserList() {
+    this.pageIsLoading = true;
     userListManage.getUserInfoList().then(res => {
+      this.pageIsLoading = false;
       if (res.isSuccess) {
         this.changeFilteredData();
       } else {
@@ -350,7 +359,7 @@ export default class UserInfo extends Vue {
           id: item.id,
           money: item.money,
           name: item.name,
-          detail: '生日:' + item.birthday+ ';职业: ' + item.job
+          detail: '生日:' + item.birthday+ '  职业: ' + item.job
         });
       }
     }

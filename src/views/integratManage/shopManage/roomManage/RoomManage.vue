@@ -1,6 +1,6 @@
 <style lang="scss" scoped>
 @import "scss/mixin";
-
+@import "scss/shared";
 .shop-manage-container {
   position: relative;
   width: 100%;
@@ -70,6 +70,10 @@
       @on-close="closeEditLayer"
       @on-renew="getRoomList"
     ></edit-room-layer>
+    <Spin size="large" fix v-if="pageIsLoading">
+      <Icon type="ios-loading" size=18 class="demo-spin-icon-load"></Icon>
+      <div>正在获取数据...</div>
+    </Spin>
   </div>
 </template>
 
@@ -154,6 +158,8 @@ export default class RoomManage extends Vue {
 
   page: number = 1;
 
+  pageIsLoading: boolean = false;
+
   title: string = '房间管理';
 
   closeEditLayer() {
@@ -221,9 +227,11 @@ export default class RoomManage extends Vue {
   }
 
   getRoomList() {
+    this.pageIsLoading = true;
     roomManage.getRoomList({
       storeId: this.storeId
     }).then(res => {
+      this.pageIsLoading = false;
       if (res.isSuccess) {
         this.changeFilteredData();
       } else {

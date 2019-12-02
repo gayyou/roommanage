@@ -1,5 +1,7 @@
 <style lang="scss" scoped>
 @import "scss/mixin";
+@import "scss/shared";
+
 .package-manage-container {
   position: relative;
   width: 100%;
@@ -88,6 +90,10 @@
       <p>退款金额：<span style="color:rgba(65,140,95,1);font-weight: bold">{{ refundManage.money }}</span></p>
       <p>{{ refundManage.msg }}</p>
     </Modal>
+    <Spin size="large" fix v-if="pageIsLoading">
+      <Icon type="ios-loading" size=18 class="demo-spin-icon-load"></Icon>
+      <div>正在获取数据...</div>
+    </Spin>
   </div>
 </template>
 
@@ -217,6 +223,8 @@ export default class RefundManage extends Vue {
 
   searchDate: string = '';
 
+  pageIsLoading: boolean = false;
+
   searchUser(value: string) {
     this.searchValue = value;
     this.changeFilteredData();
@@ -293,9 +301,11 @@ export default class RefundManage extends Vue {
   }
 
   getUserList() {
+    this.pageIsLoading = true;
     refundManage.getRefundList({
       date: this.searchDate
     }).then(res => {
+      this.pageIsLoading = false;
       if (res.isSuccess) {
         this.changeFilteredData();
       } else {

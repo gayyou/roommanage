@@ -82,6 +82,10 @@
     >
       <p>确定删除房间号为：<span style="color:rgba(65,140,95,1);font-weight: bold">{{ deleteModal.message }}</span>吗？</p>
     </Modal>
+    <Spin size="large" fix v-if="pageIsLoading">
+      <Icon type="ios-loading" size=18 class="demo-spin-icon-load"></Icon>
+      <div>正在获取数据...</div>
+    </Spin>
   </div>
 </template>
 
@@ -112,6 +116,8 @@ export default class SitManage extends Vue {
   roomId: string = '';
 
   roomType: string = '';
+
+  pageIsLoading: boolean = false;
 
   columns: any[] = [
     {
@@ -253,11 +259,13 @@ export default class SitManage extends Vue {
   }
 
   getSitList() {
+    this.pageIsLoading = true;
     sitManage.getSitList({
       storeId: this.storeId,
       roomType: this.roomType,
       roomId: this.roomId
     }).then(res => {
+      this.pageIsLoading = false;
       if (res.isSuccess) {
         this.changeFilteredData();
       } else {

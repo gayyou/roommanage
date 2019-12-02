@@ -1,5 +1,6 @@
 <style lang="scss" scoped>
 @import "scss/mixin";
+@import "scss/shared";
 
 .shop-manage-container {
   position: relative;
@@ -61,6 +62,10 @@
     >
       <p>确定删除订单：<span style="color:rgba(65,140,95,1);font-weight: bold">{{ deleteModal.message }}</span>吗？</p>
     </Modal>
+    <Spin size="large" fix v-if="pageIsLoading">
+      <Icon type="ios-loading" size=18 class="demo-spin-icon-load"></Icon>
+      <div>正在获取数据...</div>
+    </Spin>
   </div>
 </template>
 
@@ -154,6 +159,8 @@ export default class PackageOrder extends Vue {
 
   searchDate: string = '';
 
+  pageIsLoading: boolean = false;
+
   searchOrder(value: string) {
     this.searchValue = value;
     this.changeFilteredData();
@@ -225,12 +232,14 @@ export default class PackageOrder extends Vue {
   }
 
   getOrderList() {
+    this.pageIsLoading = true;
     this.searchValue = '';
     let reqObj = {
       orderDate: this.searchDate,
       orderType: '套餐订单'
     };
     orderManage.getPackageOrderList(reqObj).then(res => {
+      this.pageIsLoading = false;
       if (res.isSuccess) {
         this.changeFilteredData();
       } else {

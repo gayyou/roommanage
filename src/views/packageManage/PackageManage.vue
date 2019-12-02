@@ -1,5 +1,7 @@
 <style lang="scss" scoped>
 @import "scss/mixin";
+@import "scss/shared";
+
 .package-manage-container {
   position: relative;
   width: 100%;
@@ -77,6 +79,10 @@
       :meal-id="consumptionListManage.mealId"
       @on-close="closeConsumptionList"
     ></consumption-list>
+    <Spin size="large" fix v-if="pageIsLoading">
+      <Icon type="ios-loading" size=18 class="demo-spin-icon-load"></Icon>
+      <div>正在获取数据...</div>
+    </Spin>
   </div>
 </template>
 
@@ -165,6 +171,8 @@ export default class PackageManage extends Vue {
 
   page: number = 1;
 
+  pageIsLoading: boolean = false;
+
   consumptionListManage: any = {
     isShow: false,
     mealId: -1
@@ -241,7 +249,9 @@ export default class PackageManage extends Vue {
   }
 
   getShopList() {
+    this.pageIsLoading = true;
     packageManage.getPackageList().then(res => {
+      this.pageIsLoading = false;
       if (res.isSuccess) {
         this.changeFilteredData();
       } else {

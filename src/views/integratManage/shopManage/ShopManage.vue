@@ -1,5 +1,6 @@
 <style lang="scss" scoped>
 @import "scss/mixin";
+@import "scss/shared";
 
 .shop-manage-container {
   position: relative;
@@ -71,6 +72,10 @@
       @on-close="closeLayer"
       @on-renew="getShopList"
     ></edit-store-layer>
+    <Spin size="large" fix v-if="pageIsLoading">
+      <Icon type="ios-loading" size=18 class="demo-spin-icon-load"></Icon>
+      <div>正在获取数据...</div>
+    </Spin>
   </div>
 </template>
 
@@ -149,6 +154,8 @@ export default class ShopManage extends Vue {
 
   isShowEditStore: boolean = false;
 
+  pageIsLoading: boolean = false;
+
   editInfo: any = {
     name: '',
     intro: '',
@@ -214,7 +221,9 @@ export default class ShopManage extends Vue {
   }
 
   getShopList() {
+    this.pageIsLoading = true;
     shopManage.getShopList().then(res => {
+      this.pageIsLoading = false;
       if (res.isSuccess) {
         this.changeFilteredData();
       } else {

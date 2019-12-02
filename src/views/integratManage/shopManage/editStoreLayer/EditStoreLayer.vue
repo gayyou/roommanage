@@ -17,7 +17,6 @@
     margin-top: 20px;
     width: 100%;
 
-
     .item-input {
       width:560px;
       height:36px;

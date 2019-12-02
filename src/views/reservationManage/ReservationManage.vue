@@ -1,5 +1,7 @@
 <style lang="scss" scoped>
 @import "scss/mixin";
+@import "scss/shared";
+
 .reservation-manage-container {
   position: relative;
   width: 100%;
@@ -58,6 +60,10 @@
     >
       <p>确定删除预约：<span style="color:rgba(65,140,95,1);font-weight: bold">{{ deleteModal.message }}</span>吗？</p>
     </Modal>
+    <Spin size="large" fix v-if="pageIsLoading">
+      <Icon type="ios-loading" size=18 class="demo-spin-icon-load"></Icon>
+      <div>正在获取数据...</div>
+    </Spin>
   </div>
 </template>
 
@@ -153,6 +159,8 @@ export default class ReservationManage extends Vue {
 
   page: number = 1;
 
+  pageIsLoading: boolean = false;
+
   changeDate(time: string, type: string) {
     this.searchDate = time;
     this.getReservationList();
@@ -224,9 +232,11 @@ export default class ReservationManage extends Vue {
   }
 
   getReservationList() {
+    this.pageIsLoading = true;
     reservationManage.getReservationList({
       date: this.searchDate
     }).then(res => {
+      this.pageIsLoading = false;
       if (res.isSuccess) {
         this.changeFilteredData();
       } else {

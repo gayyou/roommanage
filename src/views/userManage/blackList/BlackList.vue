@@ -1,5 +1,7 @@
 <style lang="scss" scoped>
 @import "scss/mixin";
+@import "scss/shared";
+
 .package-manage-container {
   position: relative;
   width: 100%;
@@ -17,7 +19,7 @@
 <template>
   <div class="package-manage-container">
     <custom-header
-      name="套餐管理"
+      name="黑名单管理"
       :no-slot="true"
       @on-search="searchUser"
       @on-add="addUser"
@@ -72,6 +74,10 @@
     >
       <p>确定将用户：<span style="color:rgba(65,140,95,1);font-weight: bold">{{ addToBlackListModal.message }}</span>移出黑名单吗？</p>
     </Modal>
+    <Spin size="large" fix v-if="pageIsLoading">
+      <Icon type="ios-loading" size=18 class="demo-spin-icon-load"></Icon>
+      <div>正在获取数据...</div>
+    </Spin>
   </div>
 </template>
 
@@ -176,6 +182,8 @@ export default class BlackList extends Vue {
 
   page: number = 1;
 
+  pageIsLoading: boolean = false;
+
   searchUser(value: string) {
     this.searchValue = value;
     this.changeFilteredData();
@@ -239,7 +247,9 @@ export default class BlackList extends Vue {
   }
 
   getBlackList() {
+    this.pageIsLoading = true;
     userListManage.getBlackList().then(res => {
+      this.pageIsLoading = false;
       if (res.isSuccess) {
         this.changeFilteredData();
       } else {
