@@ -178,11 +178,13 @@ export default class RoomManage extends Vue {
 
   editSit(index: number) {
     let roomId = this.displayData[index].roomId;
+    let roomType = this.displayData[index].roomType;
     this.$router.push({
       name: '座位管理',
       params: {
         storeId: this.storeId.toString(),
-        roomId: roomId
+        roomId,
+        roomType
       }
     })
   }

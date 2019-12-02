@@ -8,7 +8,7 @@
   top: 0;
   left: 0;
   background-color: rgba(0, 0, 0, .2);
-  z-index: 100;
+  z-index: 500;
 }
 .fade-enter-active, .fade-leave-active {
   transition: opacity .5s;

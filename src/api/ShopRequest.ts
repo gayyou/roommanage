@@ -1,4 +1,5 @@
 import {Request} from "@/api/config";
+import {getReqDataSequence} from "@/utils/shared";
 
 class ShopRequest extends Request {
   public getShopRequest() {
@@ -31,7 +32,7 @@ class ShopRequest extends Request {
   public getStoreInfo(data: {
     storeId: number
   }) {
-    return this.post('/store/queryStoreByStoreId', data);
+    return this.get('/store/queryStoreByStoreId?' + getReqDataSequence(data));
   }
 }
 

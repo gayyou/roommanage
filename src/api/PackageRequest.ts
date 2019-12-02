@@ -36,7 +36,7 @@ class PackageRequest extends Request {
   public getPackageHistory(data: {
     mealId: number;
   }) {
-    return this.post('/meal/listUserCase', data);
+    return this.get('/meal/listUserCase?' + getReqDataSequence(data));
   }
 }
 

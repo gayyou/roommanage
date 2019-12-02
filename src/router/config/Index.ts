@@ -37,7 +37,7 @@ export const indexRouter: RouteConfig = {
     },
     {
       name: '座位管理',
-      path: 'integratemanage/shopmanage/:storeId/:roomId',
+      path: 'integratemanage/shopmanage/:storeId/:roomId:roomType',
       meta: {
         title: '座位管理'
       },

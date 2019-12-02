@@ -71,9 +71,7 @@ class UserListManage extends VuexModule {
 
   @Action
   public async getUserInfoList() {
-    console.log('get')
     let result = getResultResData(await userManageRequest.getUserInfoList());
-    console.log(result)
     if (result.isSuccess) {
       let resultArr: {
         id: number;
@@ -194,6 +192,13 @@ class UserListManage extends VuexModule {
     score: number;
   }) {
     return getResultResData(await userManageRequest.addUser(data));
+  }
+
+  @Action
+  public async getUsedMoneyList(data: {
+    userId: number;
+  }) {
+    return getResultResData(await userManageRequest.getUserMoney(data));
   }
 }
 

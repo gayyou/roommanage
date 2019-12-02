@@ -7,6 +7,10 @@ class UserRequest extends Request {
   }) {
     return this.post('/user/login', data);
   }
+
+  exit() {
+    return this.post('/user/exit', {});
+  }
 }
 
 export const userRequest = new UserRequest();

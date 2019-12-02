@@ -18,10 +18,18 @@
   <div class="package-manage-container">
     <custom-header
       name="退款管理"
-      :no-slot="true"
       :no-create="true"
       @on-search="searchUser"
-    ></custom-header>
+    >
+      <DatePicker
+        type="date"
+        format="yyyy-MM-dd"
+        placeholder="选择查询日期"
+        style="display: block;float: right;width: 2rem"
+        :value="searchDate"
+        @on-change="changeDate"
+      ></DatePicker>
+    </custom-header>
     <custom-table
       :data="displayData"
       :columns="columns"
@@ -33,22 +41,19 @@
       >
         <div class="operate-container">
           <word-button
+            v-if="!displayData[index].isResolved"
             type="primary"
-            @click="packageBuyInfo(index)"
-          >消费记录</word-button>
+            style="margin-right: .2rem"
+            @click="resolveRefund(index)"
+          >同意</word-button>
           <word-button
-            type="primary"
-            style="margin-left: .2rem"
-            @click="editUser(index)"
-          >编辑</word-button>
+            v-if="!displayData[index].isResolved"
+            type="delete"
+            @click="rejectRefund(index)"
+            style="margin-right: .2rem"
+          >拒绝</word-button>
           <word-button
             type="delete"
-            style="margin-left: .2rem"
-            @click="confirmAddToBlackList(index)"
-          >加进黑名单</word-button>
-          <word-button
-            type="delete"
-            style="margin-left: .2rem"
             @click="confirmDeleteUser(index)"
           >删除</word-button>
         </div>
@@ -64,14 +69,24 @@
       title="删除操作"
       @on-ok="deleteHandler"
     >
-      <p>确定删除用户：<span style="color:rgba(65,140,95,1);font-weight: bold">{{ deleteModal.message }}</span>吗？</p>
+      <p>{{ deleteModal.title }}</p>
+      <p>用户名：<span style="color:rgba(65,140,95,1);font-weight: bold">{{ deleteModal.userName }}</span></p>
+      <p>用户电话：<span style="color:rgba(65,140,95,1);font-weight: bold">{{ deleteModal.phone }}</span></p>
+      <p>退款申请日期：<span style="color:rgba(65,140,95,1);font-weight: bold">{{ deleteModal.date }}</span></p>
+      <p>退款金额：<span style="color:rgba(65,140,95,1);font-weight: bold">{{ deleteModal.money }}</span></p>
+      <p>{{ deleteModal.msg }}</p>
     </Modal>
     <Modal
-      v-model="addToBlackListModal.isShow"
-      title="加入黑名单操作"
-      @on-ok="addToBlackList"
+      v-model="refundManage.isShow"
+      title="退款操作"
+      @on-ok="updateRefund"
     >
-      <p>确定将用户：<span style="color:rgba(65,140,95,1);font-weight: bold">{{ addToBlackListModal.message }}</span>加入黑名单吗？</p>
+      <p>{{ refundManage.title }}</p>
+      <p>用户名：<span style="color:rgba(65,140,95,1);font-weight: bold">{{ refundManage.userName }}</span></p>
+      <p>用户电话：<span style="color:rgba(65,140,95,1);font-weight: bold">{{ refundManage.phone }}</span></p>
+      <p>退款申请日期：<span style="color:rgba(65,140,95,1);font-weight: bold">{{ refundManage.date }}</span></p>
+      <p>退款金额：<span style="color:rgba(65,140,95,1);font-weight: bold">{{ refundManage.money }}</span></p>
+      <p>{{ refundManage.msg }}</p>
     </Modal>
   </div>
 </template>
@@ -85,12 +100,13 @@ import WordButton from "@/components/wordButton/WordButton.vue";
 import {operationFailMsg, operationSuccessMsg} from '@/utils/shared/message';
 import {packageManage} from "@/store/modules/PackageManage";
 import {userListManage} from "@/store/modules/UserListManage";
+import {refundManage} from "@/store/modules/RefundManage";
 @Component({
   components: {WordButton, CustomTable, CustomHeader}
 })
 export default class UserInfo extends Vue {
-  get userInfoList() {
-    return userListManage.userInfoList;
+  get refundList() {
+    return refundManage.refundList;
   }
 
   columns: any[] = [
@@ -107,16 +123,16 @@ export default class UserInfo extends Vue {
       key: 'phone'
     },
     {
-      title: '余额',
+      title: '退款金额',
       key: 'money'
     },
     {
-      title: '积分',
-      key: 'score'
+      title: '日期',
+      key: 'date'
     },
     {
-      title: '来这里的目的',
-      key: 'target'
+      title: '退款状态',
+      key: 'status'
     },
     {
       title: '操作',
@@ -126,45 +142,53 @@ export default class UserInfo extends Vue {
 
   displayData: {
     index: number;
-    id: number;
-    money: number;
-    target: string;
-    score: number;
-    name: string;
+    reId: number;
+    userId: number;
     phone: string;
-    job: string;
-    birthday: string;
-    sex: string;
-    url: string;
-  }[] = [
-
-  ];
+    name: string;
+    date: string;
+    money: number;
+    orderId: number;
+    preservationId: number;
+    status: string;
+    isResolved: boolean;
+  }[] = [];
 
   filteredData: {
     index: number;
-    id: number;
-    sex: string;
-    money: number;
-    target: string;
-    score: number;
-    name: string;
+    reId: number;
+    userId: number;
     phone: string;
-    job: string;
-    birthday: string;
-    url: string;
-  }[] = [
-
-  ];
+    name: string;
+    date: string;
+    money: number;
+    orderId: number;
+    preservationId: number;
+    status: string;
+    isResolved: boolean;
+  }[] = [];
 
   deleteModal: any = {
     isShow: false,
-    message: ''
+    id: -1,
+    title: '',
+    userName: '',
+    phone: '',
+    date: '',
+    money: 0,
+    msg: '',
   };
 
   addToBlackListModal: any = {
     isShow: false,
     message: ''
   };
+
+  resolveStatus: string = '同意';
+
+  rejectStatus: string = '拒绝';
+
+  pendingStatus: string = '未处理';
 
   searchValue: string = '';
 
@@ -176,74 +200,123 @@ export default class UserInfo extends Vue {
 
   page: number = 1;
 
+  deleteReId: number = -1;
+
+  refundManage: any = {
+    isShow: false,
+    id: -1,
+    title: '',
+    userName: '',
+    phone: '',
+    date: '',
+    money: 0,
+    msg: '',
+    operation: ''
+  };
+
+  searchDate: string = '';
+
   searchUser(value: string) {
     this.searchValue = value;
     this.changeFilteredData();
   }
 
-  packageBuyInfo(index: number) {
-
-  }
-
-  editUser(index: number) {
-
-  }
-
   addToBlackList() {
-    if (this.addToBlackUserId == -1) {
-      return ;
-    }
-    userListManage.addToBlackList({
-      userId: this.addToBlackUserId,
-      tel: this.addToBlackPhone
-    }).then(res => {
-      if (res.isSuccess) {
-        operationSuccessMsg('加入黑名单成功');
-      } else {
-        operationFailMsg('操作失败');
-      }
-    });
+
   }
 
-  confirmAddToBlackList(index: number) {
-    this.addToBlackListModal.message = this.displayData[index].name;
-    this.addToBlackListModal.isShow = true;
-    this.addToBlackUserId = this.displayData[index].id;
-    this.addToBlackPhone = this.displayData[index].phone;
+  changeDate(time: string, type: string) {
+    this.searchDate = time;
+    this.getUserList();
   }
 
-  addUser() {
+  resolveRefund(index: number) {
+    let item = this.displayData[index];
+    this.refundManage = {
+      isShow: true,
+      title: '同意退款',
+      id: item.reId,
+      userName: item.name,
+      phone: item.phone,
+      date: item.date,
+      money: item.money,
+      msg: '确定同意该用户的本次退款记录吗？',
+      operation: this.resolveStatus
+    };
+  }
 
+  rejectRefund(index: number) {
+    let item = this.displayData[index];
+    this.refundManage = {
+      isShow: true,
+      title: '拒绝退款',
+      id: item.reId,
+      userName: item.name,
+      phone: item.phone,
+      date: item.date,
+      money: item.money,
+      msg: '确定拒绝该用户的本次退款记录吗？',
+      operation: this.rejectStatus
+    };
   }
 
   confirmDeleteUser(index: number) {
-    this.deleteModal.message = this.displayData[index].name;
-    this.deleteModal.isShow = true;
-    this.deleteUserId = this.displayData[index].id;
+    let item = this.displayData[index];
+    this.deleteModal = {
+      isShow: true,
+      title: '删除退款记录',
+      id: item.reId,
+      userName: item.name,
+      phone: item.phone,
+      date: item.date,
+      money: item.money,
+      msg: '确定删除该用户的本次退款记录吗？',
+    }
   }
 
   deleteHandler() {
-    if (this.deleteUserId == -1) {
+    if (this.deleteReId == -1) {
       return ;
     }
-    userListManage.deleteUser({
-      userId: this.deleteUserId
+    refundManage.deleteRefund({
+      reId: this.deleteReId
     }).then(res => {
       if (res.isSuccess) {
-        operationSuccessMsg('删除用户成功');
+        operationSuccessMsg('删除退款记录成功');
         this.getUserList();
       } else {
-        operationFailMsg('删除用户失败');
+        operationFailMsg('删除退款记录失败');
+        operationFailMsg(res.msg);
       }
     });
   }
 
   getUserList() {
-    userListManage.getUserInfoList().then(res => {
+    refundManage.getRefundList({
+      date: this.searchDate
+    }).then(res => {
       if (res.isSuccess) {
         this.changeFilteredData();
       } else {
         operationFailMsg('获取数据失败');
+      }
+    });
+  }
+
+  updateRefund() {
+    if (this.refundManage.id == -1) {
+      return ;
+    }
+    refundManage.resolve({
+      reId: this.refundManage.id,
+      status: this.refundManage.operation
+    }).then(res => {
+      if (res.isSuccess) {
+        operationSuccessMsg('退款修改成功');
+        this.getUserList();
+      } else {
+        operationFailMsg('操作失败');
+        operationFailMsg(res.msg);
       }
     });
   }
@@ -263,23 +336,23 @@ export default class UserInfo extends Vue {
   changeFilteredData() {
     this.filteredData = [];
     let count = 1;
-    for (let i = 0; i < this.userInfoList.length; i++) {
-      let item = this.userInfoList[i];
+    for (let i = 0; i < this.refundList.length; i++) {
+      let item = this.refundList[i];
       if (item.name.indexOf(this.searchValue) != -1
         || item.phone.indexOf(this.searchValue) != -1
         || this.searchValue.length == 0) {
         this.filteredData.push({
           index: count++,
-          score: item.score,
-          sex: item.sex,
+          userId: item.userId,
+          reId: item.reId,
+          date: item.date,
+          preservationId: item.preservationId,
+          status: item.status,
           phone: item.phone,
-          job: item.job,
-          target: item.target,
-          birthday: item.birthday,
-          url: item.url,
-          id: item.id,
+          name: item.name,
           money: item.money,
-          name: item.name
+          orderId: item.orderId,
+          isResolved: item.status == this.rejectStatus || item.status == this.resolveStatus
         });
       }
     }
@@ -288,7 +361,7 @@ export default class UserInfo extends Vue {
 
   beforeMount() {
     let screenWidth: number = window.screen.availWidth;
-    let tableWidthList: number[] = [107, 200, 200, 200, 150, 380, 350];  // 总的1600
+    let tableWidthList: number[] = [107, 240, 250, 250, 250, 250, 250];  // 总的1600
     for (let i = 0; i < this.columns.length; i++) {
       this.columns[i].width = tableWidthList[i] * (screenWidth / 1920);
     }

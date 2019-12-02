@@ -65,31 +65,36 @@ import {packageManage} from "@/store/modules/PackageManage";
 import {Prop} from "vue-property-decorator";
 import {operationFailMsg} from "@/utils/shared/message";
 import SmallCustomTable from "@/components/smallCustomTable/SmallCustomTable.vue";
+import {userListManage} from "@/store/modules/UserListManage";
 
 @Component({
   components: {SmallCustomTable, FloatLayerHeader, GlobalLayer}
 })
 export default class BuyList extends Vue {
-  @Prop(String) mealId!: number;
+  @Prop(String) userName!: string;
 
-  title: string = '套餐办理情况';
+  @Prop(Number) userId!: number;
+
+  title: string = '用户消费记录';
 
   displayData: {
+    id: number;
+    userId: number;
     userName: string;
-    phone: string;
-    resultDays: number;
-    usedCount: number;
-    status: string;
+    date: string;
+    money: number;
+    reason: string;
   }[] = [
 
   ];
 
   cacheData: {
+    id: number;
+    userId: number;
     userName: string;
-    phone: string;
-    resultDays: number;
-    usedCount: number;
-    status: string;
+    date: string;
+    money: number;
+    reason: string;
   }[] = [];
 
   columns: any[] = [
@@ -98,20 +103,16 @@ export default class BuyList extends Vue {
       key: 'userName'
     },
     {
-      title: '电话',
-      key: 'phone'
+      title: '日期',
+      key: 'date'
     },
     {
-      title: '剩余天数',
-      key: 'resultDays'
+      title: '金额',
+      key: 'money'
     },
     {
-      title: '使用次数',
-      key: 'usedCount'
-    },
-    {
-      title: '状态',
-      key: 'status'
+      title: '消费原因',
+      key: 'reason'
     }
   ];
 
@@ -131,49 +132,50 @@ export default class BuyList extends Vue {
     for (let i = 0; i < this.cacheData.length; i++) {
       let item = this.cacheData[i];
       if (item.userName.indexOf(this.searchValue) != -1
-        || item.phone.indexOf(this.searchValue) != -1
-        || item.status.indexOf(this.searchValue) != -1) {
+        || item.date.indexOf(this.searchValue) != -1) {
         this.displayData.push(item);
       }
     }
   }
 
   saveList(list: {
-    name: string;
-    tel: string;
-    usedTimes: number;
-    rareDays: number;
-    status: string;
+    id: number;
+    userId: number;
+    changedDate: string;
+    money: number;
+    reason: string;
   }[]) {
     this.cacheData = [];
     for (let i = 0; i < list.length; i++) {
       let item = list[i];
       this.cacheData.push({
-        status: item.status,
-        phone: item.tel,
-        usedCount: item.usedTimes,
-        resultDays: item.rareDays,
-        userName: item.name
+        id: item.id,
+        userId: item.userId,
+        userName: this.userName,
+        money: item.money,
+        date: item.changedDate,
+        reason: item.reason
       });
     }
     this.filterData();
   }
 
   created() {
-    packageManage.getPackageHistory({
-      mealId: this.mealId
+    userListManage.getUsedMoneyList({
+      userId: this.userId
     }).then(res => {
       if (res.isSuccess) {
         this.saveList(res.data);
       } else {
-        operationFailMsg('获取')
+        operationFailMsg('获取消费记录失败');
+        operationFailMsg(res.msg);
       }
     });
   }
 
   beforeMount() {
     let screenWidth: number = window.screen.availWidth;
-    let tableWidthList: number[] = [100, 150, 150, 148, 130];  // 总的680
+    let tableWidthList: number[] = [140, 180, 150, 198];  // 总的680
     for (let i = 0; i < this.columns.length; i++) {
       this.columns[i].width = tableWidthList[i] * (screenWidth / 1920);
     }

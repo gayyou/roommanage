@@ -14,7 +14,7 @@ class ReservationManage extends VuexModule {
   public reservationList: {
     preservationId: number;
     sitId: number;
-    roomId: number;
+    roomId: string;
     storeName: string;
     date: string;
     name: string;
@@ -26,7 +26,7 @@ class ReservationManage extends VuexModule {
   public setReservationList(list: {
     preservationId: number;
     sitId: number;
-    roomId: number;
+    roomId: string;
     storeName: string;
     date: string;
     name: string;

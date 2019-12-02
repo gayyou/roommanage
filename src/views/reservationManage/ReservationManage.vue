@@ -1,4 +1,5 @@
 <style lang="scss" scoped>
+@import "scss/mixin";
 .reservation-manage-container {
   position: relative;
   width: 100%;
@@ -6,7 +7,9 @@
   border-radius: 8px;
   min-height: 90vh;
 
-
+  .operate-container {
+    @include vertical-center;
+  }
 }
 </style>
 
@@ -38,7 +41,6 @@
         <div class="operate-container">
           <word-button
             type="delete"
-            style="margin-left: .2rem"
             @click="confirmDeleteShop(index)"
           >删除</word-button>
         </div>
@@ -86,8 +88,8 @@ export default class ReservationManage extends Vue {
       key: 'storeName'
     },
     {
-      title: '房间类型',
-      key: 'roomType'
+      title: '座位详情',
+      key: 'detail'
     },
     {
       title: '预约日期',
@@ -109,8 +111,9 @@ export default class ReservationManage extends Vue {
 
   displayData: {
     preservationId: number;
+    detail: string;
     sitId: number;
-    roomId: number;
+    roomId: string;
     index: number;
     storeName: string;
     date: string;
@@ -124,7 +127,8 @@ export default class ReservationManage extends Vue {
   filteredData: {
     preservationId: number;
     sitId: number;
-    roomId: number;
+    roomId: string;
+    detail: string;
     index: number;
     storeName: string;
     date: string;
@@ -210,7 +214,8 @@ export default class ReservationManage extends Vue {
           date: item.date,
           name: item.name,
           phone: item.phone,
-          roomType: item.roomType
+          roomType: item.roomType,
+          detail: item.roomType+ '-' + item.roomId + '号房-' + item.sitId + '号座位'
         });
       }
     }
@@ -231,7 +236,7 @@ export default class ReservationManage extends Vue {
 
   beforeMount() {
     let screenWidth: number = window.screen.availWidth;
-    let tableWidthList: number[] = [150, 300, 250, 250, 250, 248, 150];  // 总的1600
+    let tableWidthList: number[] = [100, 250, 280, 270, 270, 268, 150];  // 总的1600
     for (let i = 0; i < this.columns.length; i++) {
       this.columns[i].width = tableWidthList[i] * (screenWidth / 1920);
     }

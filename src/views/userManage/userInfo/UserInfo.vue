@@ -73,6 +73,23 @@
     >
       <p>确定将用户：<span style="color:rgba(65,140,95,1);font-weight: bold">{{ addToBlackListModal.message }}</span>加入黑名单吗？</p>
     </Modal>
+    <edit-user-info
+      v-if="editUserInfoManage.isShow"
+      :name="editUserInfoManage.name"
+      :id="editUserInfoManage.id"
+      :money="editUserInfoManage.money"
+      :score="editUserInfoManage.score"
+      :phone="editUserInfoManage.phone"
+      :sex="editUserInfoManage.sex"
+      @on-close="closeEditUserInfoLayer"
+      @on-renew="getUserList"
+    ></edit-user-info>
+    <buy-list
+      v-if="buyListManage.isShow"
+      :user-id="buyListManage.userId"
+      :user-name="buyListManage.userName"
+      @on-close="closeBuyListLayer"
+    ></buy-list>
   </div>
 </template>
 
@@ -85,8 +102,10 @@ import WordButton from "@/components/wordButton/WordButton.vue";
 import {operationFailMsg, operationSuccessMsg} from '@/utils/shared/message';
 import {packageManage} from "@/store/modules/PackageManage";
 import {userListManage} from "@/store/modules/UserListManage";
+import BuyList from "@/views/userManage/userInfo/buyList/BuyList.vue";
+import EditUserInfo from "@/views/userManage/userInfo/editUserInfo/EditUserInfo.vue";
 @Component({
-  components: {WordButton, CustomTable, CustomHeader}
+  components: {EditUserInfo, BuyList, WordButton, CustomTable, CustomHeader}
 })
 export default class UserInfo extends Vue {
   get userInfoList() {
@@ -101,6 +120,10 @@ export default class UserInfo extends Vue {
     {
       title: '用户名',
       key: 'name'
+    },
+    {
+      title: '用户信息',
+      key: 'detail'
     },
     {
       title: '电话',
@@ -127,6 +150,7 @@ export default class UserInfo extends Vue {
   displayData: {
     index: number;
     id: number;
+    detail: string;
     money: number;
     target: string;
     score: number;
@@ -145,6 +169,7 @@ export default class UserInfo extends Vue {
     id: number;
     sex: string;
     money: number;
+    detail: string;
     target: string;
     score: number;
     name: string;
@@ -176,17 +201,64 @@ export default class UserInfo extends Vue {
 
   page: number = 1;
 
+  buyListManage: any = {
+    isShow: false,
+    userId: -1,
+    userName: ''
+  };
+
+  editUserInfoManage: any = {
+    isShow: false,
+    money: 0,
+    score: 0,
+    id: -1,
+    name: '',
+    phone: '',
+    sex: ''
+  };
+
+  closeBuyListLayer() {
+    this.buyListManage.isShow = false;
+  }
+
+  closeEditUserInfoLayer() {
+    this.editUserInfoManage.isShow = false;
+  }
+
   searchUser(value: string) {
     this.searchValue = value;
     this.changeFilteredData();
   }
 
   packageBuyInfo(index: number) {
-
+    this.buyListManage.userId = this.displayData[index].id;
+    this.buyListManage.userName = this.displayData[index].name;
+    this.buyListManage.isShow = true;
   }
 
   editUser(index: number) {
+    let item = this.displayData[index];
+    this.editUserInfoManage = {
+      isShow: true,
+      money: item.money,
+      score: item.score,
+      id: item.id,
+      name: item.name,
+      phone: item.phone,
+      sex: item.sex
+    };
+  }
 
+  addUser() {
+    this.editUserInfoManage = {
+      isShow: true,
+      money: 0,
+      score: 0,
+      id: -1,
+      name: '',
+      phone: '',
+      sex: ''
+    };
   }
 
   addToBlackList() {
@@ -211,10 +283,6 @@ export default class UserInfo extends Vue {
     this.addToBlackListModal.isShow = true;
     this.addToBlackUserId = this.displayData[index].id;
     this.addToBlackPhone = this.displayData[index].phone;
-  }
-
-  addUser() {
-
   }
 
   confirmDeleteUser(index: number) {
@@ -280,7 +348,8 @@ export default class UserInfo extends Vue {
           url: item.url,
           id: item.id,
           money: item.money,
-          name: item.name
+          name: item.name,
+          detail: '生日:' + item.birthday+ ';职业: ' + item.job
         });
       }
     }
@@ -289,7 +358,7 @@ export default class UserInfo extends Vue {
 
   beforeMount() {
     let screenWidth: number = window.screen.availWidth;
-    let tableWidthList: number[] = [107, 200, 200, 200, 150, 380, 350];  // 总的1600
+    let tableWidthList: number[] = [100, 180, 250, 180, 150, 150, 250, 335];  // 总的1600
     for (let i = 0; i < this.columns.length; i++) {
       this.columns[i].width = tableWidthList[i] * (screenWidth / 1920);
     }

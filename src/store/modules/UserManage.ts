@@ -10,7 +10,7 @@ import {getResultResData} from "@/utils/shared/formate";
   name: 'UserManage',
 })
 class UserManage extends VuexModule {
-  public userName: string = 'admin';
+  public userName: string = '管理员';
 
   public token: string = getToken() || '';
 
@@ -36,6 +36,11 @@ class UserManage extends VuexModule {
     }
 
     return result;
+  }
+
+  @Action
+  public async exit() {
+    return getResultResData(await userRequest.exit());
   }
 }
 

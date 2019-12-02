@@ -57,7 +57,7 @@
     <div class="edit-room-layer">
       <float-layer-header
         :no-search="true"
-        :name="title"
+        name="创建座位"
         @on-close="showCancelModal"
       ></float-layer-header>
       <div class="item-container">
@@ -70,7 +70,7 @@
       </div>
       <div class="item-container">
         <span class="item-key">座位单价</span>
-        <InputNumber :max="100" :min="0.01" v-model="localMoney" style="margin-left: 0.2rem"></InputNumber>
+        <InputNumber :max="100" :min="0" v-model="localMoney" style="margin-left: 0.2rem"></InputNumber>
       </div>
       <div class="button-container">
         <Button
@@ -193,47 +193,24 @@ export default class EditSitLayer extends Vue {
 
   confirmHandler() {
     this.isLoading = true;
-    if (this.isCreate) {
-      sitManage.addSit({
-        roomId: this.roomId,
-        storeId: this.storeId,
-        sitId: parseInt(this.displaySitId),
-        roomType: this.roomType,
-        money: this.localMoney
-      }).then(res => {
-        if (res.isSuccess) {
-          operationSuccessMsg('创建座位成功');
-          this.renewHandler();
-        } else {
-          operationFailMsg(res.msg);
-        }
-      });
-    } else {
-      sitManage.updateSit({
-        roomId: this.roomId,
-        storeId: this.storeId,
-        sitId: parseInt(this.displaySitId),
-        roomType: this.roomType,
-        money: this.localMoney
-      }).then(res => {
-        if (res.isSuccess) {
-          operationSuccessMsg('修改座位成功');
-          this.renewHandler();
-        } else {
-          operationFailMsg(res.msg);
-        }
-      });
-    }
+    sitManage.addSit({
+      roomId: this.roomId,
+      storeId: this.storeId,
+      sitId: parseInt(this.displaySitId),
+      roomType: this.roomType,
+      money: this.localMoney
+    }).then(res => {
+      if (res.isSuccess) {
+        operationSuccessMsg('创建座位成功');
+        this.renewHandler();
+      } else {
+        operationFailMsg(res.msg);
+      }
+    });
   }
 
   beforeMount() {
-    if (this.sitId == -1) {
-      this.title = '创建座位';
-      this.isCreate = true;
-    } else {
-      this.displaySitId = this.localSitId.toString();
-    }
-    this.localMoney = this.money == -1 ? 0.01 : this.money;
+    this.localMoney = this.money;
     this.localSitId = this.sitId;
   }
 }

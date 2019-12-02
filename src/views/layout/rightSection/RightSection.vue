@@ -22,6 +22,7 @@
 
     position: relative;
     width: 100%;
+    z-index: 449;
     height: .8rem;
     color: rgba(16, 16, 16, 1);
     background-color: #fff;
@@ -39,7 +40,7 @@
 
       position: absolute;
       cursor: pointer;
-      width: 100px;
+      width: 140px;
       height: 30px;
       right: 40px;
       top: 50%;
@@ -48,9 +49,21 @@
       font-weight:400;
       color:rgba(61,61,61,1);
 
-      .user-name {
-        display: block;
+      .user-manage-inner-tool {
+        @include clear-float;
+        @include vertical-center;
+
+        width: 140px;
+        height: 30px;
+
+        .user-name {
+          display: block;
+          font-size: 20px;
+          width: 70px;
+        }
       }
+
+
     }
   }
 
@@ -102,14 +115,26 @@
         >{{ item.name }}
         </BreadcrumbItem>
       </Breadcrumb>
-      <div class="user-manage-tool"
-        @click="openToolDownList"
+      <Dropdown
+        style="float: right;display: block"
+        class="user-manage-tool"
+        trigger="click"
+        @on-click="changeSelect"
       >
-        <span class="user-name">{{ userName }}</span>
-        <Icon type="ios-arrow-down" style="display: block;float: right;color: #3D3D3D;margin-left: 0.2rem;transition: transform .5s ease;"
-          :style="status ? 'transform: rotate(180deg)' : ''"
-        ></Icon>
-      </div>
+        <div class="user-manage-inner-tool"
+          @click="openToolDownList"
+        >
+          <span class="user-name">{{ userName }}</span>
+          <Icon type="ios-arrow-down" style="display: block;float: right;color: #3D3D3D;margin-left: 0.2rem;transition: transform .5s ease;"
+            :style="status ? 'transform: rotate(180deg)' : ''"
+          ></Icon>
+        </div>
+        <DropdownMenu
+          slot="list"
+        >
+          <DropdownItem name="exit" style="text-align: center">退出登陆</DropdownItem>
+        </DropdownMenu>
+      </Dropdown>
     </div>
     <div class="main-area">
       <img :src="images" style="z-index: 0;position: absolute; width: 8rem;height: 7.18rem;top: .45rem;left: 50%;transform: translateX(-50%)" />
@@ -126,6 +151,8 @@ import {Watch} from 'vue-property-decorator';
 import {changeTitle, getIndexBaseRoute} from "@/utils/shared/routeUitl";
 import {breadcrumbListMap} from "@/store/breadcrumbConfig";
 import {userManage} from "@/store/modules/UserManage";
+import {operationFailMsg} from "@/utils/shared/message";
+import {cleanToken} from "@/utils/shared/localStorage";
 
 @Component({})
 export default class RightSection extends Vue {
@@ -145,6 +172,17 @@ export default class RightSection extends Vue {
 
   openToolDownList() {
     this.status = !this.status;
+  }
+
+  changeSelect(value: string) {
+    switch (value) {
+      case 'exit': {
+        userManage.exit().then(res => {
+          cleanToken();
+          this.$router.push('/login')
+        });
+      }
+    }
   }
 
   images: string = require('@assets/images/background.png');

@@ -18,7 +18,7 @@
 <template>
   <div class="shop-manage-container">
     <custom-header
-      name="充值订单"
+      name="预约订单"
       :no-create="true"
       @on-search="searchOrder"
     >
@@ -76,7 +76,8 @@ import {shopRequest} from "@/api/ShopRequest";
 import {orderManage} from "@/store/modules/OrderManage";
 import {operationFailMsg, operationSuccessMsg} from "@/utils/shared/message";
 @Component({
-  components: {WordButton, CustomTable, CustomHeader}
+  components: {WordButton, CustomTable, CustomHeader},
+  name: 'ReservationOrder'
 })
 export default class ReservationOrder extends Vue {
   get reservationOrderList() {

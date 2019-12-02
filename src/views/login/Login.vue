@@ -57,6 +57,7 @@
       color: #fff;
       background-color: #287346;
       border-radius: 8px;
+      border: none!important;
     }
   }
 }
@@ -67,9 +68,9 @@
     <div class="login-main-container">
       <img class="logo-image" src="@assets/images/icons/logo.png" />
       <span class="page-name">欢迎登陆考拉自习室管理平台</span>
-      <input class="input-msg" v-model="account" placeholder="用户名" />
-      <input class="input-msg" v-model="password" @keydown.enter="login" placeholder="密码" type="password" />
-      <button class="login-button" @click="login">登陆</button>
+      <input class="input-msg" v-model="account" @input="limitAccount" placeholder="用户名" />
+      <input class="input-msg" v-model="password" @input="limitPassword" @keydown.enter="login" placeholder="密码" type="password" />
+      <Button class="login-button" @click="login" :loading="loading">登陆</Button>
     </div>
   </div>
 </template>
@@ -80,7 +81,7 @@ import Component from 'vue-class-component';
 import {userManage} from "@/store/modules/UserManage";
 import {operationFailMsg} from "@/utils/shared/message";
 import {getUserName, setUserName} from "@/utils/shared/localStorage";
-import {isUndef} from "@/utils/shared";
+import {isUndef, limitString} from "@/utils/shared";
 
 @Component
 export default class Login extends Vue {
@@ -88,7 +89,17 @@ export default class Login extends Vue {
 
   password: string = '';
 
+  loading: boolean = false;
+
   backgroundUrl: string = require('@assets/images/login_background.jpg');
+
+  limitAccount() {
+    this.account = limitString(this.account, 16);
+  }
+
+  limitPassword() {
+    this.password = limitString(this.password, 32);
+  }
 
   checkEmpty() {
     if (this.account.length == 0 || this.password.length == 0) {
@@ -99,20 +110,24 @@ export default class Login extends Vue {
   }
 
   login() {
+    if (this.loading) {
+      return ;
+    }
     if (!this.checkEmpty()) {
       operationFailMsg('请填写账号和密码！');
       return ;
     }
-
+    this.loading = true;
     userManage.login({
       username: this.account,
       psw: this.password
     }).then(res => {
+      this.loading = false;
       if (res.isSuccess) {
         setUserName(this.account);
         this.$router.replace('/index');
       } else {
-        operationFailMsg(res.msg);
+        operationFailMsg('请填写正确的账号和密码');
       }
     });
   }

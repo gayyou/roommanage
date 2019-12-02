@@ -4,7 +4,7 @@
 .edit-package-container {
   position: relative;
   width:720px;
-  height:510px;
+  height:380px;
   background:rgba(255,255,255,1);
   box-shadow:0px 3px 6px rgba(0,0,0,0.16);
   opacity:1;
@@ -67,7 +67,7 @@
         @on-close="closeLayer"
       ></float-layer-header>
       <div class="item-container">
-        <span class="item-key">套餐名称</span>
+        <span class="item-key">用户姓名</span>
         <input
           class="item-input"
           v-model="localName"
@@ -75,29 +75,28 @@
         />
       </div>
       <div class="item-container">
-        <span class="item-key">套餐类型</span>
+        <span class="item-key">用户电话</span>
         <input
           class="item-input"
-          v-model="localType"
-          @input="limitType"
+          v-model="localPhone"
+          @input="limitPhone"
         />
       </div>
       <div class="item-container">
-        <span class="item-key">套餐详情</span>
-        <textarea
-          class="text-area"
-          v-model="localDetail"
-          @input="limitDetail"
-        ></textarea>
+        <span class="item-key">用户性别</span>
+        <RadioGroup v-model="localSex" style="margin-left: .2rem">
+          <Radio :label="male"></Radio>
+          <Radio :label="female" style="margin-left: .2rem"></Radio>
+        </RadioGroup>
       </div>
       <div class="item-container">
         <div class="half-section">
-          <span class="item-key" style="margin-top: .05rem">套餐金额</span>
-          <InputNumber :max="5000" :min="0" v-model="localMoney" style="margin-left: 0.2rem;width: 2.2rem"></InputNumber>
+          <span class="item-key" style="margin-top: .05rem">用户余额</span>
+          <InputNumber :max="10000" :min="0" v-model="localMoney" style="margin-left: 0.2rem;width: 2.2rem"></InputNumber>
         </div>
         <div class="half-section">
-          <span class="item-key" style="margin-top: .05rem">套餐天数</span>
-          <InputNumber :max="1000" :min="0" v-model="localDays" style="margin-left: 0.2rem;width: 2.2rem"></InputNumber>
+          <span class="item-key" style="margin-top: .05rem">用户积分</span>
+          <InputNumber :max="10000" :min="0" v-model="localScore" style="margin-left: 0.2rem;width: 2.2rem"></InputNumber>
         </div>
       </div>
       <div class="button-container">
@@ -123,13 +122,13 @@
         title="保存操作"
         @on-ok="confirmHandler"
       >
-        <p v-if="isCreate">确定增加套餐: </p>
-        <p v-else>确定将套餐修改为: </p>
-        <p>套餐名: <span style="font-weight: bold;color: #418c5f;font-size: .2rem">{{ localName }}</span></p>
-        <p>套餐类型: <span style="font-weight: bold;color: #418c5f;font-size: .2rem">{{ localType }}</span></p>
-        <p>套餐详情: <span style="font-weight: bold;color: #418c5f;font-size: .2rem">{{ localDetail }}</span></p>
-        <p>套餐金额: <span style="font-weight: bold;color: #418c5f;font-size: .2rem">{{ localMoney }}</span></p>
-        <p>套餐天数: <span style="font-weight: bold;color: #418c5f;font-size: .2rem">{{ localDays }}</span></p>
+        <p v-if="isCreate">确定增加用户: </p>
+        <p v-else>确定将用户修改为: </p>
+        <p>用户名: <span style="font-weight: bold;color: #418c5f;font-size: .2rem">{{ localName }}</span></p>
+        <p>用户电话: <span style="font-weight: bold;color: #418c5f;font-size: .2rem">{{ localPhone }}</span></p>
+        <p>用户性别: <span style="font-weight: bold;color: #418c5f;font-size: .2rem">{{ localSex }}</span></p>
+        <p>用户金额: <span style="font-weight: bold;color: #418c5f;font-size: .2rem">{{ localMoney }}</span></p>
+        <p>用户积分: <span style="font-weight: bold;color: #418c5f;font-size: .2rem">{{ localScore }}</span></p>
       </Modal>
     </div>
   </global-layer>
@@ -144,31 +143,37 @@ import {Prop} from "vue-property-decorator";
 import {limitString} from "@/utils/shared";
 import {operationFailMsg, operationSuccessMsg} from "@/utils/shared/message";
 import {packageManage} from "@/store/modules/PackageManage";
+import {userManageRequest} from "@/api/UserManageRequest";
+import {userListManage} from "@/store/modules/UserListManage";
 @Component({
   components: {FloatLayerHeader, GlobalLayer}
 })
-export default class EditPackage extends Vue {
+export default class EditUserInfo extends Vue {
   @Prop(Number) id!: number;
 
   @Prop(String) name!: string;
 
-  @Prop(String) detail!: string;
+  @Prop(String) phone!: string;
 
-  @Prop(String) type!: string;
+  @Prop(String) sex!: string;
 
   @Prop(Number) money!: number;
 
-  @Prop(Number) days!: number;
+  @Prop(Number) score!: number;
 
   localName: string = '';
 
-  localType: string = '';
+  localPhone: string = '';
 
-  localDetail: string = '';
+  localSex: string = '';
 
   localMoney: number = 0;
 
-  localDays: number = 0;
+  localScore: number = 0;
+
+  male: string = '男';
+
+  female: string = '女';
 
   title: string = '编辑套餐';
 
@@ -189,12 +194,8 @@ export default class EditPackage extends Vue {
     this.localName = limitString(this.localName, 25);
   }
 
-  limitType() {
-    this.localType = limitString(this.localType, 20);
-  }
-
-  limitDetail() {
-    this.localDetail = limitString(this.localDetail, 150);
+  limitPhone() {
+    this.localPhone = limitString(this.localPhone, 11);
   }
 
   closeLayer() {
@@ -204,9 +205,9 @@ export default class EditPackage extends Vue {
   showCancelModal() {
     if (this.localName != this.name
       || this.localMoney != this.money
-      || this.localDetail != this.detail
-      || this.localType != this.type
-      || this.localDays != this.days
+      || this.localSex != this.sex
+      || this.localPhone != this.phone
+      || this.score != this.localScore
     ) {
       this.cancelModal.isShow = true;
     } else {
@@ -217,37 +218,37 @@ export default class EditPackage extends Vue {
   confirmHandler() {
     this.isLoading = true;
     if (this.isCreate) {
-      packageManage.addPackage({
-        mealDays: this.localDays,
-        mealDesc: this.localDetail,
-        mealMoney: this.localMoney,
-        mealName: this.localName,
-        mealType: this.localType
+      userListManage.addUser({
+        name: this.localName,
+        sex: this.localSex,
+        rareMoney: this.localMoney,
+        score: this.localScore,
+        tel: this.localPhone
       }).then(res => {
         this.isLoading = false;
         if (res.isSuccess) {
-          operationSuccessMsg('增加套餐成功');
+          operationSuccessMsg('增加哟用户成功');
           this.renewHandler();
         } else {
-          operationFailMsg('增加套餐失败');
+          operationFailMsg('增加用户失败');
           operationFailMsg(res.msg);
         }
       });
     } else {
-      packageManage.updatePackage({
-        mealId: this.id,
-        mealDays: this.localDays,
-        mealDesc: this.localDetail,
-        mealMoney: this.localMoney,
-        mealName: this.localName,
-        mealType: this.localType
+      userListManage.updateUserInfo({
+        userId: this.id,
+        name: this.localName,
+        sex: this.localSex,
+        rareMoney: this.localMoney,
+        score: this.localScore,
+        tel: this.localPhone
       }).then(res => {
         this.isLoading = false;
         if (res.isSuccess) {
-          operationSuccessMsg('修改套餐成功');
+          operationSuccessMsg('修改用户成功');
           this.renewHandler();
         } else {
-          operationFailMsg('修改套餐失败');
+          operationFailMsg('修改用户失败');
           operationFailMsg(res.msg);
         }
       });
@@ -269,24 +270,23 @@ export default class EditPackage extends Vue {
       return ;
     }
     if (this.localName.length == 0) {
-      operationFailMsg('请输入套餐名称');
+      operationFailMsg('请输入用户名');
       return ;
     }
-    if (this.localType.length == 0) {
-      operationFailMsg('请输入套餐类型');
+    if (this.localPhone.length == 0) {
+      operationFailMsg('请输入电话号码');
       return ;
     }
-    if (this.localMoney <= 0) {
+    if (this.localMoney < 0) {
       operationFailMsg('请输入大于0的金额数');
       return ;
     }
-    if (this.localDays <= 0) {
-      operationFailMsg('请输入大于0的天数');
+    if (this.localScore < 0) {
+      operationFailMsg('请输入大于0的积分');
       return ;
     }
-    let daysString = this.localDays.toString();
-    if (!/^[1-9]+[0-9]*]*$/.test(daysString)) {
-      operationFailMsg('请输入整数的天数');
+    if (!(/^1[3456789]\d{9}$/.test(this.localPhone))) {
+      operationFailMsg('请输入正确的手机号码');
       return ;
     }
     this.confirmModal.isShow = true;
@@ -298,10 +298,10 @@ export default class EditPackage extends Vue {
       this.title = '新增套餐';
     }
     this.localName = this.name;
-    this.localDetail = this.detail;
-    this.localType = this.type;
+    this.localPhone = this.phone;
+    this.localScore = this.score;
     this.localMoney = this.money;
-    this.localDays = this.days;
+    this.localSex = this.sex;
   }
 }
 </script>

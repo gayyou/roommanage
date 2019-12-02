@@ -42,7 +42,8 @@ _Request.interceptors.request.use((config: any): any => {
       config.url += '&tokens=' + token;
     }
   }
-  return config
+
+  return config;
 }, error => {});
 
 /**
@@ -51,12 +52,16 @@ _Request.interceptors.request.use((config: any): any => {
 _Request.interceptors.response.use((result: any): any => {
   let data = result.data;
 
+
+  if (result.data.msg == '没有操作权限') {
+    router.replace('/login');
+  }
+
   // 当没有前面的问题的时候，返回请求对象的数据
   return result.data;
 
 }, (error: any) => {
   // 请求发生错误的时候
-  console.log(error)
   // let status = error.response.status;
   //
   // switch (status) {

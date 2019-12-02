@@ -37,11 +37,11 @@
             type="primary"
             @click="editShop(index)"
           >编辑</word-button>
-          <word-button
-            type="primary"
-            style="margin-left: .2rem"
-            @click="editSit(index)"
-          >座位管理</word-button>
+<!--          <word-button-->
+<!--            type="primary"-->
+<!--            style="margin-left: .2rem"-->
+<!--            @click="editSit(index)"-->
+<!--          >座位管理</word-button>-->
           <word-button
             type="delete"
             style="margin-left: .2rem"
@@ -60,6 +60,16 @@
       @on-close="closeLayer"
       @on-renew="getSitList"
     ></edit-sit-layer>
+    <edit-sit-money
+      v-if="editSitMoneyManage.isShow"
+      :room-type="this.roomType"
+      :room-id="this.roomId"
+      :store-id="this.storeId"
+      :money="editSitMoneyManage.money"
+      :sit-id="editSitMoneyManage.sitId"
+      @on-close="closeSitMoney"
+      @on-renew="getSitList"
+    ></edit-sit-money>
     <Page
       :total="filteredData.length"
       style="margin-top: .4rem"
@@ -88,8 +98,9 @@ import {operationFailMsg, operationSuccessMsg} from "@/utils/shared/message";
 import {roomManage} from "@/store/modules/RoomManage";
 import {sitManage} from "@/store/modules/SitManage";
 import EditSitLayer from "@/views/integratManage/shopManage/roomManage/sitManage/editSitLayer/EditSitLayer.vue";
+import EditSitMoney from "@/views/integratManage/shopManage/roomManage/sitManage/editSitMoney/EditSitMoney.vue";
 @Component({
-  components: {EditSitLayer, WordButton, CustomTable, CustomHeader}
+  components: {EditSitMoney, EditSitLayer, WordButton, CustomTable, CustomHeader}
 })
 export default class SitManage extends Vue {
   get sitList() {
@@ -135,6 +146,7 @@ export default class SitManage extends Vue {
 
   displayData: {
     index: number;
+    storeName: string;
     sitId: number;
     roomId: string;
     roomType: string;
@@ -145,6 +157,7 @@ export default class SitManage extends Vue {
   filteredData: {
     index: number;
     sitId: number;
+    storeName: string;
     roomId: string;
     roomType: string;
     storeId: number;
@@ -162,6 +175,12 @@ export default class SitManage extends Vue {
     sitId: -1
   };
 
+  editSitMoneyManage: any = {
+    isShow: false,
+    money: -1,
+    sitId: -1
+  };
+
   searchValue: string = '';
 
   deleteShopId: number = -1;
@@ -170,20 +189,24 @@ export default class SitManage extends Vue {
 
   deleteRoomId: string = '';
 
+  deleteStoreId: number = -1;
+
+  storeName: string = '';
+
   title: string = '座位管理';
 
   page: number = 1;
 
   editShop(index: number) {
     // 编辑店铺的按钮
-    this.editSitManage.money = this.displayData[index].money;
-    this.editSitManage.sitId = this.displayData[index].sitId;
-    this.editSitManage.isShow = true;
+    this.editSitMoneyManage.money = this.displayData[index].money;
+    this.editSitMoneyManage.sitId = this.displayData[index].sitId;
+    this.editSitMoneyManage.isShow = true;
   }
 
   addSit() {
     this.editSitManage.sitId = -1;
-    this.editSitManage.money = -1;
+    this.editSitManage.money = 0;
     this.editSitManage.isShow = true;
   }
 
@@ -191,15 +214,8 @@ export default class SitManage extends Vue {
     this.editSitManage.isShow = false;
   }
 
-  editSit(index: number) {
-    let roomId = this.displayData[index].roomId;
-    this.$router.push({
-      name: '座位管理',
-      params: {
-        storeId: this.storeId.toString(),
-        roomId: roomId
-      }
-    })
+  closeSitMoney() {
+    this.editSitMoneyManage.isShow = false;
   }
 
   searchShop(value: string) {
@@ -208,9 +224,10 @@ export default class SitManage extends Vue {
   }
 
   confirmDeleteShop(index: number) {
-    this.deleteModal.message = this.displayData[index].storeId;
+    this.deleteModal.message = this.displayData[index].sitId;
     this.deleteModal.isShow = true;
-    this.deleteShopId = this.displayData[index].storeId;
+    this.deleteShopId = this.displayData[index].sitId;
+    this.deleteStoreId = this.displayData[index].storeId;
     this.deleteRoomType = this.displayData[index].roomType;
     this.deleteRoomId = this.displayData[index].roomId;
   }
@@ -275,6 +292,7 @@ export default class SitManage extends Vue {
           roomId: item.roomId,
           sitId: item.sitId,
           roomType: item.roomType,
+          storeName: this.storeName,
           money: item.money
         });
       }
@@ -287,7 +305,9 @@ export default class SitManage extends Vue {
       storeId: this.storeId
     }).then(res => {
       if (res.isSuccess) {
-        this.title += '-' + res.data.storeName + '-' + this.roomId;
+        this.title += '-' + res.data.storeName + '-' + this.roomType + '-' + this.roomId;
+        this.storeName = res.data.storeName;
+        this.getSitList();
       } else {
         operationFailMsg('获取门店信息失败，跳回门店管理页面');
         this.$router.push({
@@ -309,12 +329,12 @@ export default class SitManage extends Vue {
     let param = this.$route.params;
     this.storeId = parseInt(param.storeId) || -1;
     this.roomId = param.roomId || '-1';
-    if (this.storeId == -1 || this.roomId == '-1') {
+    this.roomType = param.roomType || '';
+    if (this.storeId == -1 || this.roomId == '-1' || this.roomType.length == 0) {
       this.$router.push({
         name: '门店管理'
       });
     }
-    this.getSitList();
     this.getStoreInfo();
   }
 }

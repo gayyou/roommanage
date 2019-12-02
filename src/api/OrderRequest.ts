@@ -6,6 +6,7 @@ class OrderRequest extends Request {
     orderType?: string;
     orderDate: string;
   }) {
+    console.log(data);
     return this.get('/order/listOrderByType?' + getReqDataSequence(data));
   }
 

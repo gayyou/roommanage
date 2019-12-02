@@ -1,5 +1,4 @@
 import {Request} from "@/api/config";
-import {getReqDataSequence} from "@/utils/shared";
 
 class SitRequest extends Request {
   public getSitList(data: {

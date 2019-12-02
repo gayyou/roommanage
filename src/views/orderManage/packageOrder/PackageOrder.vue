@@ -76,7 +76,8 @@ import {shopRequest} from "@/api/ShopRequest";
 import {orderManage} from "@/store/modules/OrderManage";
 import {operationFailMsg, operationSuccessMsg} from "@/utils/shared/message";
 @Component({
-  components: {WordButton, CustomTable, CustomHeader}
+  components: {WordButton, CustomTable, CustomHeader},
+  name: 'PackageOrder'
 })
 export default class PackageOrder extends Vue {
   get packageOrderList() {

@@ -197,6 +197,7 @@ export default class BlackList extends Vue {
     }).then(res => {
       if (res.isSuccess) {
         operationSuccessMsg('移出黑名单成功');
+        this.getBlackList();
       } else {
         operationFailMsg('操作失败');
       }

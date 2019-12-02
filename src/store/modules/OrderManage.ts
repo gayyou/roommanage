@@ -6,7 +6,7 @@ import {orderRequest} from "@/api/OrderRequest";
 @Module({
   dynamic: true,
   store,
-  name: 'UserManage',
+  name: 'OrderManage',
 })
 class OrderManage extends VuexModule {
   public rechargeList: {

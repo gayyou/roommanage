@@ -67,6 +67,10 @@
 .ivu-radio-focus {
   box-shadow: 0 0 0 2px rgba(65, 140, 95, .2)!important;
 }
+
+.ivu-modal-wrap {
+  z-index: 999999999!important;
+}
 </style>
 
 <template>
@@ -87,6 +91,8 @@ import Vue from "vue";
 import Component from "vue-class-component";
 import LeftSection from '@/views/layout/leftSection/LeftSection.vue';
 import RightSection from '@/views/layout/rightSection/RightSection.vue';
+import {getToken} from "@/utils/shared/localStorage";
+import {isUndef} from "@/utils/shared";
 
 @Component({
   components: {
@@ -96,7 +102,9 @@ import RightSection from '@/views/layout/rightSection/RightSection.vue';
 })
 export default class IndexLayout extends Vue {
   created() {
-
+    if (isUndef(getToken())) {
+      this.$router.replace('/login');
+    }
   }
 }
 </script>

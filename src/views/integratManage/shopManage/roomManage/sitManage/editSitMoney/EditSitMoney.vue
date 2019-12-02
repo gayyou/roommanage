@@ -57,24 +57,21 @@
     <div class="edit-room-layer">
       <float-layer-header
         :no-search="true"
-        :name="title"
+        name="修改单价"
         @on-close="showCancelModal"
       ></float-layer-header>
       <div class="item-container">
-        <span class="item-key">房间编号</span>
+        <span class="item-key">座位编号</span>
         <input
           class="item-input"
-          v-model="localRoomId"
-          @input="limitRoomId"
+          :value="displaySitId"
+          disabled="disabled"
+          Readonly
         />
       </div>
       <div class="item-container">
-        <span class="item-key">房间类型</span>
-        <input
-          class="item-input"
-          v-model="localRoomType"
-          @input="limitRoomType"
-        />
+        <span class="item-key">座位单价</span>
+        <InputNumber :max="100" :min="0" v-model="localMoney" style="margin-left: 0.2rem"></InputNumber>
       </div>
       <div class="button-container">
         <Button
@@ -101,8 +98,8 @@
       >
         <p v-if="isCreate">确定添加房间: </p>
         <p v-else>确定将房间修改为: </p>
-        <p>房间编号: <span style="font-weight: bold;color: #418c5f;font-size: .2rem">{{ localRoomId }}</span></p>
-        <p>房间类型: <span style="font-weight: bold;color: #418c5f;font-size: .2rem">{{ localRoomType }}</span></p>
+        <p>座位编号: <span style="font-weight: bold;color: #418c5f;font-size: .2rem">{{ localSitId }}</span></p>
+        <p>座位单价: <span style="font-weight: bold;color: #418c5f;font-size: .2rem">{{ localMoney }}</span></p>
       </Modal>
     </div>
   </global-layer>
@@ -113,25 +110,32 @@ import Vue from 'vue'
 import Component from 'vue-class-component';
 import GlobalLayer from "@/components/globalLayer/GlobalLayer.vue";
 import FloatLayerHeader from "@/components/floatLayerHeader/FloatLayerHeader.vue";
-import {Prop} from "vue-property-decorator";
+import {Prop, Watch} from "vue-property-decorator";
 import {limitString} from "@/utils/shared";
 import {operationFailMsg, operationSuccessMsg} from '@/utils/shared/message';
 import {roomManage} from "@/store/modules/RoomManage";
+import {sitManage} from "@/store/modules/SitManage";
 @Component({
   components: {FloatLayerHeader, GlobalLayer}
 })
-export default class EditRoomLayer extends Vue {
+export default class EditSitMoney extends Vue {
   @Prop(Number) storeId!: number;
 
   @Prop(String) roomId!: string;
 
   @Prop(String) roomType!: string;
 
-  title: string = '编辑门店';
+  @Prop(Number) sitId!: number;
 
-  localRoomId: string = '';
+  @Prop(Number) money!: number;
 
-  localRoomType: string = '';
+  title: string = '编辑座位';
+
+  localMoney: number = 0;
+
+  localSitId: number = 0;
+
+  displaySitId: string = '';
 
   isCreate: boolean = false;
 
@@ -146,16 +150,13 @@ export default class EditRoomLayer extends Vue {
     msg: ''
   };
 
-  limitRoomId() {
-    this.localRoomId = limitString(this.localRoomId, 32);
-  }
-
-  limitRoomType() {
-    this.localRoomType = limitString(this.localRoomType, 16);
+  @Watch('displaySitId')
+  handler(newValue: string) {
+    this.localSitId = parseInt(newValue);
   }
 
   showCancelModal() {
-    if (this.localRoomId != this.roomId || this.localRoomType != this.roomType) {
+    if (this.localMoney != this.money) {
       this.cancelModal.isShow = true;
     } else {
       this.cancelHander();
@@ -176,12 +177,12 @@ export default class EditRoomLayer extends Vue {
       operationFailMsg('请耐心等待后台响应后再点击');
       return ;
     }
-    if (this.localRoomId.length == 0) {
-      operationFailMsg('请输入房间编号');
+    if (this.displaySitId.length == 0) {
+      operationFailMsg('请输入座位编号');
       return ;
     }
-    if (this.localRoomType.length == 0) {
-      operationFailMsg('请输入房间类型');
+    if (!/^[0-9]*$/.test(this.displaySitId)) {
+      operationFailMsg('请输入数字');
       return ;
     }
     this.confirmModal.isShow = true;
@@ -189,56 +190,26 @@ export default class EditRoomLayer extends Vue {
 
   confirmHandler() {
     this.isLoading = true;
-    if (this.isCreate) {
-      roomManage.addRoom({
-        roomType: this.localRoomType,
-        roomId: this.localRoomId,
-        storeId: this.storeId
-      }).then(res => {
-        this.isLoading = false;
-        if (res.isSuccess) {
-          operationSuccessMsg('添加房间成功');
-          this.renewHandler();
-        } else {
-          operationFailMsg(res.msg);
-        }
-      });
-    } else {
-      roomManage.removeRoom({
-        storeId: this.storeId,
-        roomType: this.roomType,
-        roomId: this.roomId
-      }).then(res => {
-        if (res.isSuccess) {
-          roomManage.addRoom({
-            storeId: this.storeId,
-            roomType: this.localRoomType,
-            roomId: this.localRoomId
-          }).then(res => {
-            this.isLoading = false;
-            if (res.isSuccess) {
-              operationSuccessMsg('更新门店成功');
-              this.renewHandler();
-            } else {
-              operationFailMsg(res.msg);
-            }
-          });
-        } else {
-          this.isLoading = false;
-          operationFailMsg('更新房间错误')
-          operationFailMsg(res.msg);
-        }
-      });
-    }
+    sitManage.updateSit({
+      roomId: this.roomId,
+      storeId: this.storeId,
+      sitId: this.sitId,
+      roomType: this.roomType,
+      money: this.localMoney
+    }).then(res => {
+      if (res.isSuccess) {
+        operationSuccessMsg('修改座位单价成功');
+        this.renewHandler();
+      } else {
+        operationFailMsg(res.msg);
+      }
+    });
   }
 
   beforeMount() {
-    if (this.roomId.length == 0) {
-      this.title = '创建门店';
-      this.isCreate = true;
-    }
-    this.localRoomId = this.roomId;
-    this.localRoomType = this.roomType;
+    this.displaySitId = this.sitId.toString();
+    this.localMoney = this.money;
+    this.localSitId = this.sitId;
   }
 }
 </script>
