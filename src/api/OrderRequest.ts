@@ -3,10 +3,9 @@ import {getReqDataSequence} from "@/utils/shared";
 
 class OrderRequest extends Request {
   public getOrderList(data: {
-    orderType?: string;
+    orderType: string;
     orderDate: string;
   }) {
-    console.log(data);
     return this.get('/order/listOrderByType?' + getReqDataSequence(data));
   }
 

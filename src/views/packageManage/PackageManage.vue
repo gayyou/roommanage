@@ -91,7 +91,8 @@ import {packageManage} from "@/store/modules/PackageManage";
 import EditPackage from "@/views/packageManage/editPackage/EditPackage.vue";
 import ConsumptionList from "@/views/packageManage/consumptionList/ConsumptionList.vue";
 @Component({
-  components: {ConsumptionList, EditPackage, WordButton, CustomTable, CustomHeader}
+  components: {ConsumptionList, EditPackage, WordButton, CustomTable, CustomHeader},
+  name: 'PackageManage'
 })
 export default class PackageManage extends Vue {
   get packageList() {

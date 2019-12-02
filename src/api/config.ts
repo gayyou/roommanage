@@ -9,7 +9,7 @@ let baseUrl: string;
 
 if (process.env.NODE_ENV === 'production') {
   // 生产环境下使用真实路径
-  baseUrl = 'http://47.106.213.116/api';
+  baseUrl = 'http://106.53.89.176:8080/admin';
 } else {
   // 非生产环境下，都使用代理服务器
   baseUrl = '/api/admin';

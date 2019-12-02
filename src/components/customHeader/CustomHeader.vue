@@ -94,7 +94,8 @@ import Component from 'vue-class-component';
 import {Prop} from "vue-property-decorator";
 import WordButton from "@/components/wordButton/WordButton.vue";
 @Component({
-  components: {WordButton}
+  components: {WordButton},
+  name: 'CustomHeader'
 })
 export default class CustomHeader extends Vue {
   @Prop(String) name!: string;

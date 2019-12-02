@@ -233,8 +233,9 @@ export default class RechargeOrder extends Vue {
 
   getOrderList() {
     this.searchValue = '';
-    orderManage.getRechargeList({
-      orderDate: this.searchDate
+    orderManage.getRechargeOrderList({
+      orderDate: this.searchDate,
+      orderType: '充值订单'
     }).then(res => {
       if (res.isSuccess) {
         this.changeFilteredData();

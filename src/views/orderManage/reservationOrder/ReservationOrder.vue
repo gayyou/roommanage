@@ -242,8 +242,9 @@ export default class ReservationOrder extends Vue {
 
   getOrderList() {
     this.searchValue = '';
-    orderManage.getReservationList({
-      orderDate: this.searchDate
+    orderManage.getReservationOrderList({
+      orderDate: this.searchDate,
+      orderType: '预约订单'
     }).then(res => {
       if (res.isSuccess) {
         this.changeFilteredData();

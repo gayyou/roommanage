@@ -226,9 +226,11 @@ export default class PackageOrder extends Vue {
 
   getOrderList() {
     this.searchValue = '';
-    orderManage.getPackageList({
-      orderDate: this.searchDate
-    }).then(res => {
+    let reqObj = {
+      orderDate: this.searchDate,
+      orderType: '套餐订单'
+    };
+    orderManage.getPackageOrderList(reqObj).then(res => {
       if (res.isSuccess) {
         this.changeFilteredData();
       } else {

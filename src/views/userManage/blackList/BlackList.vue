@@ -85,7 +85,8 @@ import {operationFailMsg, operationSuccessMsg} from '@/utils/shared/message';
 import {packageManage} from "@/store/modules/PackageManage";
 import {userListManage} from "@/store/modules/UserListManage";
 @Component({
-  components: {WordButton, CustomTable, CustomHeader}
+  components: {WordButton, CustomTable, CustomHeader},
+  name: 'BlackList'
 })
 export default class BlackList extends Vue {
   get blackList() {

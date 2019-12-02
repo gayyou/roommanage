@@ -105,7 +105,8 @@ import {userListManage} from "@/store/modules/UserListManage";
 import BuyList from "@/views/userManage/userInfo/buyList/BuyList.vue";
 import EditUserInfo from "@/views/userManage/userInfo/editUserInfo/EditUserInfo.vue";
 @Component({
-  components: {EditUserInfo, BuyList, WordButton, CustomTable, CustomHeader}
+  components: {EditUserInfo, BuyList, WordButton, CustomTable, CustomHeader},
+  name: 'UserInfo'
 })
 export default class UserInfo extends Vue {
   get userInfoList() {

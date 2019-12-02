@@ -71,7 +71,8 @@ import { Watch } from 'vue-property-decorator';
 import CustomTable from "@/components/customTable/CustomTable.vue";
 import {operationFailMsg, operationSuccessMsg} from "@/utils/shared/message";
 @Component({
-  components: {CustomTable, WordButton, CustomHeader}
+  components: {CustomTable, WordButton, CustomHeader},
+  name: 'ReservationManage'
 })
 export default class ReservationManage extends Vue {
   get reservationList() {

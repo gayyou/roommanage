@@ -2,6 +2,7 @@ import {Action, getModule, Module, Mutation, VuexModule} from "vuex-module-decor
 import store from "@/store/store";
 import {getResultResData} from "@/utils/shared/formate";
 import {orderRequest} from "@/api/OrderRequest";
+import {isUndef} from "@/utils/shared";
 
 @Module({
   dynamic: true,
@@ -93,11 +94,10 @@ class OrderManage extends VuexModule {
   }
 
   @Action
-  public async getRechargeList(data: {
+  public async getRechargeOrderList(data: {
     orderDate: string;
-    orderType?: string;
+    orderType: string;
   }) {
-    data.orderType = '充值订单';
     let result = getResultResData(await orderRequest.getOrderList(data));
     if (result.isSuccess) {
       let rechargeList = [];
@@ -120,11 +120,10 @@ class OrderManage extends VuexModule {
   }
 
   @Action
-  public async getReservationList(data: {
+  public async getReservationOrderList(data: {
     orderDate: string;
-    orderType?: string;
+    orderType: string;
   }) {
-    data.orderType = '预约订单';
     let result = getResultResData(await orderRequest.getOrderList(data));
     if (result.isSuccess) {
       let reservationList = [];
@@ -151,11 +150,10 @@ class OrderManage extends VuexModule {
   }
 
   @Action
-  public async getPackageList(data: {
+  public async getPackageOrderList(data: {
     orderDate: string;
-    orderType?: string;
+    orderType: string;
   }) {
-    data.orderType = '套餐订单';
     let result = getResultResData(await orderRequest.getOrderList(data));
     if (result.isSuccess) {
       let packageList = [];

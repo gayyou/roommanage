@@ -63,7 +63,9 @@ import Vue from "vue";
 import Component from "vue-class-component";
 import {Prop} from "vue-property-decorator";
 
-@Component
+@Component({
+  name: 'CustomTable'
+})
 export default class CustomTable extends Vue {
   @Prop() columns!: any[];
 

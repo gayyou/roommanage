@@ -102,9 +102,10 @@ import {packageManage} from "@/store/modules/PackageManage";
 import {userListManage} from "@/store/modules/UserListManage";
 import {refundManage} from "@/store/modules/RefundManage";
 @Component({
-  components: {WordButton, CustomTable, CustomHeader}
+  components: {WordButton, CustomTable, CustomHeader},
+  name: 'RefundManage'
 })
-export default class UserInfo extends Vue {
+export default class RefundManage extends Vue {
   get refundList() {
     return refundManage.refundList;
   }
