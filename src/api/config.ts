@@ -1,6 +1,6 @@
 import axios from 'axios';
 import router from '@/router/router';
-import {message} from '@/utils/shared/message';
+import {message, operationFailMsg} from '@/utils/shared/message';
 import {userManage} from "@/store/modules/UserManage";
 import {getToken} from "@/utils/shared/localStorage";
 import {isUndef} from "@/utils/shared";
@@ -54,6 +54,7 @@ _Request.interceptors.response.use((result: any): any => {
 
 
   if (result.data.msg == '没有操作权限') {
+    operationFailMsg('登陆状态过期，请重新登陆');
     router.replace('/login');
   }
 

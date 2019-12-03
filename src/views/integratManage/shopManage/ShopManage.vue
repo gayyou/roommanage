@@ -7,7 +7,7 @@
   width: 100%;
   padding: 0px 20px 20px 20px;
   border-radius: 8px;
-  min-height: 90vh;
+  min-height: 95vh;
 
   .operate-container {
     @include vertical-center;
@@ -52,8 +52,8 @@
       </template>
     </custom-table>
     <Page
+      class="turn-page-container"
       :total="filteredData.length"
-      style="margin-top: .4rem"
       @on-change="changePage"
     />
     <Modal
@@ -72,7 +72,7 @@
       @on-close="closeLayer"
       @on-renew="getShopList"
     ></edit-store-layer>
-    <Spin size="large" fix v-if="pageIsLoading">
+    <Spin size="large" fix v-if="pageIsLoading" class="custom-spin">
       <Icon type="ios-loading" size=18 class="demo-spin-icon-load"></Icon>
       <div>正在获取数据...</div>
     </Spin>

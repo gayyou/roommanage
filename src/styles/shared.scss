@@ -8,3 +8,14 @@
 .demo-spin-icon-load{
   animation: ani-demo-spin 1s linear infinite;
 }
+
+.turn-page-container {
+  position: absolute;
+  bottom: .3rem;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.custom-spin {
+  color: #418c5f;
+}

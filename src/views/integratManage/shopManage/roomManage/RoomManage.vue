@@ -6,7 +6,7 @@
   width: 100%;
   padding: 0px 20px 20px 20px;
   border-radius: 8px;
-  min-height: 90vh;
+  min-height: 95vh;
 
   .operate-container {
     @include vertical-center;
@@ -51,8 +51,8 @@
       </template>
     </custom-table>
     <Page
+      class="turn-page-container"
       :total="filteredData.length"
-      style="margin-top: .4rem"
       @on-change="changePage"
     />
     <Modal
@@ -60,7 +60,9 @@
       title="删除操作"
       @on-ok="deleteHandler"
     >
-      <p>确定删除房间号为：<span style="color:rgba(65,140,95,1);font-weight: bold">{{ deleteModal.message }}</span>吗？</p>
+      <p>确定删除房间：</p>
+      <p>房间类型：<span style="color:rgba(65,140,95,1);font-weight: bold">{{ deleteRoomType }}</span></p>
+      <p>房间号：<span style="color:rgba(65,140,95,1);font-weight: bold">{{ deleteRoomId }}</span></p>
     </Modal>
     <edit-room-layer
       v-if="editLayerManage.isShow"
@@ -70,7 +72,7 @@
       @on-close="closeEditLayer"
       @on-renew="getRoomList"
     ></edit-room-layer>
-    <Spin size="large" fix v-if="pageIsLoading">
+    <Spin size="large" fix v-if="pageIsLoading" class="custom-spin">
       <Icon type="ios-loading" size=18 class="demo-spin-icon-load"></Icon>
       <div>正在获取数据...</div>
     </Spin>
@@ -201,7 +203,7 @@ export default class RoomManage extends Vue {
   }
 
   confirmDeleteShop(index: number) {
-    this.deleteModal.message = this.displayData[index].storeId;
+    this.deleteModal.message = '房间类型: ' + this.displayData[index].roomType + '  房间编号: ' +this.displayData[index].roomId;
     this.deleteModal.isShow = true;
     this.deleteShopId = this.displayData[index].storeId;
     this.deleteRoomType = this.displayData[index].roomType;

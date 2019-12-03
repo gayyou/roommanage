@@ -7,7 +7,11 @@ Vue.use(Router);
 
 export const constantRoutes: RouteConfig[] = [
   indexRouter,
-  loginRoute
+  loginRoute,
+  {
+    path: '',
+    redirect: '/index'
+  }
 ];
 
 export default new Router({

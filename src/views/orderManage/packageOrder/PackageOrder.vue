@@ -7,7 +7,7 @@
   width: 100%;
   padding: 0px 20px 20px 20px;
   border-radius: 8px;
-  min-height: 90vh;
+  min-height: 95vh;
 
   .operate-container {
     @include vertical-center;
@@ -52,7 +52,7 @@
     </custom-table>
     <Page
       :total="filteredData.length"
-      style="margin-top: .4rem"
+      class="turn-page-container"
       @on-change="changePage"
     />
     <Modal
@@ -60,9 +60,14 @@
       title="删除操作"
       @on-ok="deleteHandler"
     >
-      <p>确定删除订单：<span style="color:rgba(65,140,95,1);font-weight: bold">{{ deleteModal.message }}</span>吗？</p>
+      <p>确定删除订单：</p>
+      <p>用户名：<span style="color:rgba(65,140,95,1);font-weight: bold">{{ deleteModal.name }}</span></p>
+      <p>电话：<span style="color:rgba(65,140,95,1);font-weight: bold">{{ deleteModal.phone }}</span></p>
+      <p>日期：<span style="color:rgba(65,140,95,1);font-weight: bold">{{ deleteModal.date }}</span></p>
+      <p>金额：<span style="color:rgba(65,140,95,1);font-weight: bold">{{ deleteModal.money }}</span></p>
+      <p>订单状态：<span style="color:rgba(65,140,95,1);font-weight: bold">{{ deleteModal.status }}</span></p>
     </Modal>
-    <Spin size="large" fix v-if="pageIsLoading">
+    <Spin size="large" fix v-if="pageIsLoading" class="custom-spin">
       <Icon type="ios-loading" size=18 class="demo-spin-icon-load"></Icon>
       <div>正在获取数据...</div>
     </Spin>
@@ -148,7 +153,12 @@ export default class PackageOrder extends Vue {
 
   deleteModal: any = {
     isShow: false,
-    message: ''
+    message: '',
+    name: '',
+    date: '',
+    phone: '',
+    money: 0,
+    status: ''
   };
 
   searchValue: string = '';
@@ -172,9 +182,15 @@ export default class PackageOrder extends Vue {
   }
 
   confirmDeleteShop(index: number) {
-    this.deleteModal.message = this.displayData[index].userName
-      + ', 手机号: ' + this.displayData[index].phone + ',日期: ' + this.displayData[index].date;
-    this.deleteModal.isShow = true;
+    let item = this.displayData[index];
+    this.deleteModal = {
+      isShow: true,
+      phone: item.phone,
+      date: item.date,
+      money: item.money,
+      name: item.userName,
+      status: item.status
+    };
     this.deleteOrderId = this.displayData[index].orderId;
   }
 

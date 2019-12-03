@@ -4,12 +4,11 @@
 .edit-store-layer-container {
   position: relative;
   width:720px;
-  height:440px;
   background:rgba(255,255,255,1);
   box-shadow:0px 3px 6px rgba(0,0,0,0.16);
   opacity:1;
   border-radius:8px;
-  padding: 0 20px 0 20px;
+  padding: 0 20px 20px 20px;
 
   .item-container {
     @include clear-float;
@@ -74,7 +73,7 @@
           @input="limitIntro"
         ></textarea>
       </div>
-      <div class="item-container">
+      <div class="item-container" v-if="!isCreate">
         <span class="item-key">营业状态</span>
         <RadioGroup v-model="storeStatus" style="margin-left: .2rem">
           <Radio :label="isOpenStatus"></Radio>
@@ -108,7 +107,7 @@
         <p v-else>确定将门店修改为: </p>
         <p>门店名: <span style="font-weight: bold;color: #418c5f;font-size: .2rem">{{ localName }}</span></p>
         <p>门店详情: <span style="font-weight: bold;color: #418c5f;font-size: .2rem">{{ localIntro }}</span></p>
-        <p>门店详情: <span style="font-weight: bold;color: #418c5f;font-size: .2rem">{{ storeStatus }}</span></p>
+        <p v-if="!isCreate">门店状态: <span style="font-weight: bold;color: #418c5f;font-size: .2rem">{{ storeStatus }}</span></p>
       </Modal>
     </div>
   </global-layer>
@@ -182,7 +181,7 @@ export default class EditStoreLayer extends Vue {
       operationFailMsg('请输入门店名');
       return ;
     }
-    if (this.storeStatus.length == 0) {
+    if (this.storeStatus.length == 0 && !this.isCreate) {
       operationFailMsg('请选择门店状态');
       return ;
     }
@@ -209,7 +208,7 @@ export default class EditStoreLayer extends Vue {
       shopManage.addStore({
         storeAddress: this.localIntro,
         storeName: this.localName,
-        storeStatus: this.storeStatus == this.isOpenStatus ? 1 : 0
+        storeStatus: 0
       }).then(res => {
         this.isLoading = false;
         if (res.isSuccess) {
@@ -249,8 +248,8 @@ export default class EditStoreLayer extends Vue {
     }
     this.localIntro = this.intro || '';
     this.localName = this.name || '';
-    if (this.storeStatus.length != 0) {
-      this.storeStatus = this.status ? this.isOpenStatus : this.isCloseStaus;
+    if (this.storeStatus.length == 0) {
+      this.storeStatus = this.status == this.isOpenStatus ? this.isOpenStatus : this.isCloseStaus;
     }
   }
 }

@@ -7,7 +7,7 @@
   width: 100%;
   padding: 0px 20px 20px 20px;
   border-radius: 8px;
-  min-height: 90vh;
+  min-height: 95vh;
 
   .operate-container {
     @include vertical-center;
@@ -21,8 +21,8 @@
     <custom-header
       name="黑名单管理"
       :no-slot="true"
+      :no-create="true"
       @on-search="searchUser"
-      @on-add="addUser"
     ></custom-header>
     <custom-table
       :data="displayData"
@@ -38,14 +38,13 @@
 <!--            type="primary"-->
 <!--            @click="packageBuyInfo(index)"-->
 <!--          >消费记录</word-button>-->
-          <word-button
-            type="primary"
-            @click="editUser(index)"
-          >编辑</word-button>
+<!--          <word-button-->
+<!--            type="primary"-->
+<!--            @click="editUser(index)"-->
+<!--          >编辑</word-button>-->
           <word-button
             type="primary"
             @click="confirmRemoveFromBlackList(index)"
-            style="margin-left: .2rem"
           >移出黑名单</word-button>
           <word-button
             type="delete"
@@ -57,7 +56,7 @@
     </custom-table>
     <Page
       :total="filteredData.length"
-      style="margin-top: .4rem"
+      class="turn-page-container"
       @on-change="changePage"
     />
     <Modal
@@ -65,16 +64,28 @@
       title="删除操作"
       @on-ok="deleteHandler"
     >
-      <p>确定删除用户：<span style="color:rgba(65,140,95,1);font-weight: bold">{{ deleteModal.message }}</span>吗？</p>
+      <p>确定删除用户：</p>
+      <p>用户名：<span style="color:rgba(65,140,95,1);font-weight: bold">{{ deleteModal.name }}</span></p>
+      <p>用户电话：<span style="color:rgba(65,140,95,1);font-weight: bold">{{ deleteModal.phone }}</span></p>
+      <p>用户余额：<span style="color:rgba(65,140,95,1);font-weight: bold">{{ deleteModal.money }}</span></p>
+      <p>用户积分：<span style="color:rgba(65,140,95,1);font-weight: bold">{{ deleteModal.score }}</span></p>
+      <p>用户目的：<span style="color:rgba(65,140,95,1);font-weight: bold">{{ deleteModal.target }}</span></p>
+      <p>删除后该数据不可恢复，确定删除该用户吗？</p>
     </Modal>
     <Modal
       v-model="addToBlackListModal.isShow"
       title="移出黑名单操作"
       @on-ok="removeFromBlackList"
     >
-      <p>确定将用户：<span style="color:rgba(65,140,95,1);font-weight: bold">{{ addToBlackListModal.message }}</span>移出黑名单吗？</p>
+      <p>将用户移出黑名单：</p>
+      <p>用户名：<span style="color:rgba(65,140,95,1);font-weight: bold">{{ addToBlackListModal.name }}</span></p>
+      <p>用户电话：<span style="color:rgba(65,140,95,1);font-weight: bold">{{ addToBlackListModal.phone }}</span></p>
+      <p>用户余额：<span style="color:rgba(65,140,95,1);font-weight: bold">{{ addToBlackListModal.money }}</span></p>
+      <p>用户积分：<span style="color:rgba(65,140,95,1);font-weight: bold">{{ addToBlackListModal.score }}</span></p>
+      <p>用户目的：<span style="color:rgba(65,140,95,1);font-weight: bold">{{ addToBlackListModal.target }}</span></p>
+      <p>确定将该用户移出黑名单吗？</p>
     </Modal>
-    <Spin size="large" fix v-if="pageIsLoading">
+    <Spin size="large" fix v-if="pageIsLoading" class="custom-spin">
       <Icon type="ios-loading" size=18 class="demo-spin-icon-load"></Icon>
       <div>正在获取数据...</div>
     </Spin>
@@ -214,8 +225,15 @@ export default class BlackList extends Vue {
   }
 
   confirmRemoveFromBlackList(index: number) {
-    this.addToBlackListModal.message = this.displayData[index].name;
-    this.addToBlackListModal.isShow = true;
+    let item = this.displayData[index];
+    this.addToBlackListModal = {
+      isShow: true,
+      name: item.name,
+      phone: item.phone,
+      target: item.target,
+      money: item.money,
+      score: item.score
+    }
     this.addToBlackUserId = this.displayData[index].id;
     this.addToBlackPhone = this.displayData[index].phone;
   }
@@ -225,8 +243,15 @@ export default class BlackList extends Vue {
   }
 
   confirmDeleteUser(index: number) {
-    this.deleteModal.message = this.displayData[index].name;
-    this.deleteModal.isShow = true;
+    let item = this.displayData[index];
+    this.deleteModal = {
+      isShow: true,
+      name: item.name,
+      phone: item.phone,
+      target: item.target,
+      money: item.money,
+      score: item.score
+    }
     this.deleteUserId = this.displayData[index].id;
   }
 

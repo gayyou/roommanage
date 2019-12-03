@@ -7,7 +7,7 @@
   width: 100%;
   padding: 0px 20px 20px 20px;
   border-radius: 8px;
-  min-height: 90vh;
+  min-height: 95vh;
 
   .operate-container {
     @include vertical-center;
@@ -53,7 +53,7 @@
     </custom-table>
     <Page
       :total="filteredData.length"
-      style="margin-top: .4rem"
+      class="turn-page-container"
       @on-change="changePage"
     />
     <Modal
@@ -61,7 +61,12 @@
       title="删除操作"
       @on-ok="deleteHandler"
     >
-      <p>确定删除店铺：<span style="color:rgba(65,140,95,1);font-weight: bold">{{ deleteModal.message }}</span>吗？</p>
+      <p>确定删除套餐：</p>
+      <p>套餐名：<span style="color:rgba(65,140,95,1);font-weight: bold">{{ deleteModal.name }}</span></p>
+      <p>套餐类型：<span style="color:rgba(65,140,95,1);font-weight: bold">{{ deleteModal.type }}</span></p>
+      <p>套餐详情：<span style="color:rgba(65,140,95,1);font-weight: bold">{{ deleteModal.detail }}</span></p>
+      <p>套餐金额：<span style="color:rgba(65,140,95,1);font-weight: bold">{{ deleteModal.money }}</span></p>
+      <p>套餐天数：<span style="color:rgba(65,140,95,1);font-weight: bold">{{ deleteModal.days }}</span></p>
     </Modal>
     <edit-package
       v-if="editPackageManage.isShow"
@@ -79,7 +84,7 @@
       :meal-id="consumptionListManage.mealId"
       @on-close="closeConsumptionList"
     ></consumption-list>
-    <Spin size="large" fix v-if="pageIsLoading">
+    <Spin size="large" fix v-if="pageIsLoading" class="custom-spin">
       <Icon type="ios-loading" size=18 class="demo-spin-icon-load"></Icon>
       <div>正在获取数据...</div>
     </Spin>
@@ -162,7 +167,11 @@ export default class PackageManage extends Vue {
 
   deleteModal: any = {
     isShow: false,
-    message: ''
+    name: '',
+    type: '',
+    money: 0,
+    detail: '',
+    days: 0
   };
 
   searchValue: string = '';
@@ -227,8 +236,15 @@ export default class PackageManage extends Vue {
   }
 
   confirmDeletePackage(index: number) {
-    this.deleteModal.message = this.displayData[index].name;
-    this.deleteModal.isShow = true;
+    let item = this.displayData[index];
+    this.deleteModal = {
+      isShow: true,
+      name: item.name,
+      type: item.type,
+      money: item.money,
+      detail: item.detail,
+      days: item.days
+    };
     this.deletePackageId = this.displayData[index].id;
   }
 

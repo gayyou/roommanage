@@ -1,12 +1,13 @@
 <style lang="scss" scoped>
 @import "scss/mixin";
+@import "scss/shared";
 
 .shop-manage-container {
   position: relative;
   width: 100%;
   padding: 0px 20px 20px 20px;
   border-radius: 8px;
-  min-height: 90vh;
+  min-height: 95vh;
 
   .operate-container {
     @include vertical-center;
@@ -72,7 +73,7 @@
     ></edit-sit-money>
     <Page
       :total="filteredData.length"
-      style="margin-top: .4rem"
+      class="turn-page-container"
       @on-change="changePage"
     />
     <Modal
@@ -80,9 +81,12 @@
       title="删除操作"
       @on-ok="deleteHandler"
     >
-      <p>确定删除房间号为：<span style="color:rgba(65,140,95,1);font-weight: bold">{{ deleteModal.message }}</span>吗？</p>
+      <p>删除座位</p>
+      <p>房间类型：<span style="color:rgba(65,140,95,1);font-weight: bold">{{ deleteRoomType }}</span></p>
+      <p>房间号：<span style="color:rgba(65,140,95,1);font-weight: bold">{{ deleteRoomId }}</span></p>
+      <p>座位号：<span style="color:rgba(65,140,95,1);font-weight: bold">{{ deleteShopId }}</span></p>
     </Modal>
-    <Spin size="large" fix v-if="pageIsLoading">
+    <Spin size="large" fix v-if="pageIsLoading" class="custom-spin">
       <Icon type="ios-loading" size=18 class="demo-spin-icon-load"></Icon>
       <div>正在获取数据...</div>
     </Spin>

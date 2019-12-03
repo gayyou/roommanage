@@ -7,7 +7,7 @@
   width: 100%;
   padding: 0px 20px 20px 20px;
   border-radius: 8px;
-  min-height: 90vh;
+  min-height: 95vh;
 
   .operate-container {
     @include vertical-center;
@@ -63,7 +63,7 @@
     </custom-table>
     <Page
       :total="filteredData.length"
-      style="margin-top: .4rem"
+      class="turn-page-container"
       @on-change="changePage"
     />
     <Modal
@@ -90,7 +90,7 @@
       <p>退款金额：<span style="color:rgba(65,140,95,1);font-weight: bold">{{ refundManage.money }}</span></p>
       <p>{{ refundManage.msg }}</p>
     </Modal>
-    <Spin size="large" fix v-if="pageIsLoading">
+    <Spin size="large" fix v-if="pageIsLoading" class="custom-spin">
       <Icon type="ios-loading" size=18 class="demo-spin-icon-load"></Icon>
       <div>正在获取数据...</div>
     </Spin>

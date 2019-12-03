@@ -78,7 +78,7 @@
     >
       <p>确定修改开门时间为: <span style="color:rgba(65,140,95,1);font-weight: bold">提前{{ saveModal.msg }}分钟</span>吗？</p>
     </Modal>
-    <Spin size="large" fix v-if="pageIsLoading">
+    <Spin size="large" fix v-if="pageIsLoading" class="custom-spin">
       <Icon type="ios-loading" size=18 class="demo-spin-icon-load"></Icon>
       <div>正在获取数据...</div>
     </Spin>
