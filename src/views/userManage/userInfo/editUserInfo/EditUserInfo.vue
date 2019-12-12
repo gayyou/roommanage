@@ -4,12 +4,11 @@
 .edit-package-container {
   position: relative;
   width:720px;
-  height:380px;
   background:rgba(255,255,255,1);
   box-shadow:0px 3px 6px rgba(0,0,0,0.16);
   opacity:1;
   border-radius:8px;
-  padding: 0 20px 0 20px;
+  padding: 0 20px 20px 20px;
 
   .item-container {
     @include clear-float;
@@ -67,11 +66,19 @@
         @on-close="closeLayer"
       ></float-layer-header>
       <div class="item-container">
-        <span class="item-key">用户姓名</span>
+        <span class="item-key">用户昵称</span>
         <input
           class="item-input"
           v-model="localName"
           @input="limitName"
+        />
+      </div>
+      <div class="item-container">
+        <span class="item-key">真实姓名</span>
+        <input
+          class="item-input"
+          v-model="localRealName"
+          @input="limitRealName"
         />
       </div>
       <div class="item-container">
@@ -83,13 +90,6 @@
         />
       </div>
       <div class="item-container">
-        <span class="item-key">用户性别</span>
-        <RadioGroup v-model="localSex" style="margin-left: .2rem">
-          <Radio :label="male"></Radio>
-          <Radio :label="female" style="margin-left: .2rem"></Radio>
-        </RadioGroup>
-      </div>
-      <div class="item-container">
         <div class="half-section">
           <span class="item-key" style="margin-top: .05rem">用户余额</span>
           <InputNumber :max="10000" :min="0" v-model="localMoney" style="margin-left: 0.2rem;width: 2.2rem"></InputNumber>
@@ -98,6 +98,13 @@
           <span class="item-key" style="margin-top: .05rem">用户积分</span>
           <InputNumber :max="10000" :min="0" v-model="localScore" style="margin-left: 0.2rem;width: 2.2rem"></InputNumber>
         </div>
+      </div>
+      <div class="item-container">
+        <span class="item-key">用户性别</span>
+        <RadioGroup v-model="localSex" style="margin-left: .2rem">
+          <Radio :label="male"></Radio>
+          <Radio :label="female" style="margin-left: .2rem"></Radio>
+        </RadioGroup>
       </div>
       <div class="button-container">
         <Button
@@ -125,10 +132,12 @@
         <p v-if="isCreate">确定增加用户: </p>
         <p v-else>确定将用户修改为: </p>
         <p>用户名: <span style="font-weight: bold;color: #418c5f;font-size: .2rem">{{ localName }}</span></p>
+        <p>真实姓名: <span style="font-weight: bold;color: #418c5f;font-size: .2rem">{{ localRealName }}</span></p>
         <p>用户电话: <span style="font-weight: bold;color: #418c5f;font-size: .2rem">{{ localPhone }}</span></p>
         <p>用户性别: <span style="font-weight: bold;color: #418c5f;font-size: .2rem">{{ localSex }}</span></p>
         <p>用户金额: <span style="font-weight: bold;color: #418c5f;font-size: .2rem">{{ localMoney }}</span></p>
         <p>用户积分: <span style="font-weight: bold;color: #418c5f;font-size: .2rem">{{ localScore }}</span></p>
+        <p>确定此操作吗？</p>
       </Modal>
     </div>
   </global-layer>
@@ -140,10 +149,8 @@ import Component from 'vue-class-component';
 import GlobalLayer from "@/components/globalLayer/GlobalLayer.vue";
 import FloatLayerHeader from "@/components/floatLayerHeader/FloatLayerHeader.vue";
 import {Prop} from "vue-property-decorator";
-import {limitString} from "@/utils/shared";
+import {isUndef, limitString} from "@/utils/shared";
 import {operationFailMsg, operationSuccessMsg} from "@/utils/shared/message";
-import {packageManage} from "@/store/modules/PackageManage";
-import {userManageRequest} from "@/api/UserManageRequest";
 import {userListManage} from "@/store/modules/UserListManage";
 @Component({
   components: {FloatLayerHeader, GlobalLayer}
@@ -161,6 +168,8 @@ export default class EditUserInfo extends Vue {
 
   @Prop(Number) score!: number;
 
+  @Prop(String) realName!: string;
+
   localName: string = '';
 
   localPhone: string = '';
@@ -171,11 +180,13 @@ export default class EditUserInfo extends Vue {
 
   localScore: number = 0;
 
+  localRealName: string = '';
+
   male: string = '男';
 
   female: string = '女';
 
-  title: string = '编辑套餐';
+  title: string = '编辑用户';
 
   isCreate: boolean = false;
 
@@ -194,6 +205,10 @@ export default class EditUserInfo extends Vue {
     this.localName = limitString(this.localName, 25);
   }
 
+  limitRealName() {
+    this.localRealName = limitString(this.localRealName, 25);
+  }
+
   limitPhone() {
     this.localPhone = limitString(this.localPhone, 11);
   }
@@ -208,6 +223,7 @@ export default class EditUserInfo extends Vue {
       || this.localSex != this.sex
       || this.localPhone != this.phone
       || this.score != this.localScore
+      || this.realName != this.localRealName
     ) {
       this.cancelModal.isShow = true;
     } else {
@@ -223,11 +239,12 @@ export default class EditUserInfo extends Vue {
         sex: this.localSex,
         rareMoney: this.localMoney,
         score: this.localScore,
-        tel: this.localPhone
+        tel: this.localPhone,
+        realName: this.localRealName
       }).then(res => {
         this.isLoading = false;
         if (res.isSuccess) {
-          operationSuccessMsg('增加哟用户成功');
+          operationSuccessMsg('增加用户成功');
           this.renewHandler();
         } else {
           operationFailMsg('增加用户失败');
@@ -241,7 +258,8 @@ export default class EditUserInfo extends Vue {
         sex: this.localSex,
         rareMoney: this.localMoney,
         score: this.localScore,
-        tel: this.localPhone
+        tel: this.localPhone,
+        realName: this.localRealName
       }).then(res => {
         this.isLoading = false;
         if (res.isSuccess) {
@@ -277,6 +295,18 @@ export default class EditUserInfo extends Vue {
       operationFailMsg('请输入电话号码');
       return ;
     }
+    if (!(/^1[3456789]\d{9}$/.test(this.localPhone))) {
+      operationFailMsg('请输入正确的手机号码');
+      return ;
+    }
+    if (isUndef(this.localMoney)) {
+      operationFailMsg('请填写正确的用户余额');
+      return ;
+    }
+    if (isUndef(this.localScore)) {
+      operationFailMsg('请填写正确的用户积分');
+      return ;
+    }
     if (this.localMoney < 0) {
       operationFailMsg('请输入大于0的金额数');
       return ;
@@ -285,8 +315,8 @@ export default class EditUserInfo extends Vue {
       operationFailMsg('请输入大于0的积分');
       return ;
     }
-    if (!(/^1[3456789]\d{9}$/.test(this.localPhone))) {
-      operationFailMsg('请输入正确的手机号码');
+    if (this.localSex.length == 0) {
+      operationFailMsg('请选择用户性别');
       return ;
     }
     this.confirmModal.isShow = true;
@@ -295,13 +325,14 @@ export default class EditUserInfo extends Vue {
   beforeMount() {
     if (this.id == -1) {
       this.isCreate = true;
-      this.title = '新增套餐';
+      this.title = '新增用户';
     }
-    this.localName = this.name;
-    this.localPhone = this.phone;
-    this.localScore = this.score;
-    this.localMoney = this.money;
-    this.localSex = this.sex;
+    this.localName = this.name || '';
+    this.localPhone = this.phone || '';
+    this.localScore = this.score || 0;
+    this.localMoney = this.money || 0;
+    this.localSex = this.sex || '';
+    this.localRealName = this.realName || '';
   }
 }
 </script>

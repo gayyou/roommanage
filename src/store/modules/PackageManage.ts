@@ -18,6 +18,7 @@ class PackageManage extends VuexModule {
     detail: string;
     days: number;
     name: string;
+    times: number;
   }[] = [];
 
   @Mutation
@@ -28,6 +29,7 @@ class PackageManage extends VuexModule {
     detail: string;
     days: number;
     name: string;
+    times: number;
   }[]) {
     this.packageList = list;
   }
@@ -43,6 +45,7 @@ class PackageManage extends VuexModule {
         detail: string;
         days: number;
         name: string;
+        times: number;
       }[] = [];
       for (let i = 0; i < result.data.length; i++) {
         let item = result.data[i];
@@ -52,7 +55,8 @@ class PackageManage extends VuexModule {
           type: item.mealType,
           detail: item.mealDesc,
           days: item.mealDays,
-          name: item.mealName
+          name: item.mealName,
+          times: item.usedTime
         });
       }
       this.setPackageList(resultArr);
@@ -68,6 +72,7 @@ class PackageManage extends VuexModule {
     mealType: string;
     mealMoney: number;
     mealDesc: string;
+    usedTime: number;
   }) {
     return getResultResData(await packageRequest.addPackage(data));
   }
@@ -80,6 +85,7 @@ class PackageManage extends VuexModule {
     mealType: string;
     mealMoney: number;
     mealDesc: string;
+    usedTime: number;
   }) {
     return getResultResData(await packageRequest.updatePackage(data));
   }

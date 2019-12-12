@@ -52,7 +52,6 @@ _Request.interceptors.request.use((config: any): any => {
 _Request.interceptors.response.use((result: any): any => {
   let data = result.data;
 
-
   if (result.data.msg == '没有操作权限') {
     operationFailMsg('登陆状态过期，请重新登陆');
     router.replace('/login');
@@ -62,6 +61,41 @@ _Request.interceptors.response.use((result: any): any => {
   return result.data;
 
 }, (error: any) => {
+  if (isUndef(error.response)) {
+    return {
+      status: -2,
+      data: {},
+      message: '请求发不出去，请检查您的网络。如果您的网络正常，请联系服务器管理人员'
+    }
+  }
+
+  let status = error.response.status;
+
+  switch (status) {
+    case 404: {
+      return {
+        status: -2,
+        data: error,
+        message: '服务器请求地址出错，请联系服务器管理人员'
+      };
+    }
+
+    case 500: {
+      return {
+        status: -2,
+        data: error,
+        message: '服务器出现异常，请联系服务器管理人员'
+      };
+    }
+
+    default: {
+      return {
+        status: -2,
+        data: error,
+        message: '请求发生错误，请重新刷新页面'
+      };
+    }
+  }
   // 请求发生错误的时候
   // let status = error.response.status;
   //

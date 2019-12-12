@@ -5,7 +5,7 @@
 .package-manage-container {
   position: relative;
   width: 100%;
-  padding: 0px 20px 20px 20px;
+  padding: 0px 20px 100px;
   border-radius: 8px;
   min-height: 95vh;
 
@@ -53,6 +53,7 @@
     </custom-table>
     <Page
       :total="filteredData.length"
+      :current="page"
       class="turn-page-container"
       @on-change="changePage"
     />
@@ -76,6 +77,7 @@
       :detail="editPackageManage.detail"
       :days="editPackageManage.days"
       :id="editPackageManage.id"
+      :times="editPackageManage.times"
       @on-close="closeEditPackageLayer"
       @on-renew="getShopList"
     ></edit-package>
@@ -132,6 +134,10 @@ export default class PackageManage extends Vue {
       key: 'days'
     },
     {
+      title: '使用次数',
+      key: 'times'
+    },
+    {
       title: '套餐介绍',
       key: 'detail'
     },
@@ -149,6 +155,7 @@ export default class PackageManage extends Vue {
     detail: string;
     days: number;
     name: string;
+    times: number;
   }[] = [
 
   ];
@@ -161,6 +168,7 @@ export default class PackageManage extends Vue {
     detail: string;
     days: number;
     name: string;
+    times: number;
   }[] = [
 
   ];
@@ -194,6 +202,7 @@ export default class PackageManage extends Vue {
     name: '',
     detail: '',
     money: 0,
+    times: 0,
     days: 0
   };
 
@@ -206,6 +215,7 @@ export default class PackageManage extends Vue {
   }
 
   searchPackage(value: string) {
+    this.page = 1;
     this.searchValue = value;
     this.changeFilteredData();
   }
@@ -222,6 +232,7 @@ export default class PackageManage extends Vue {
     this.editPackageManage.type = this.displayData[index].type;
     this.editPackageManage.money = this.displayData[index].money;
     this.editPackageManage.name = this.displayData[index].name;
+    this.editPackageManage.times = this.displayData[index].times;
     this.editPackageManage.isShow = true;
   }
 
@@ -232,6 +243,7 @@ export default class PackageManage extends Vue {
     this.editPackageManage.type = '';
     this.editPackageManage.money = 0;
     this.editPackageManage.name = '';
+    this.editPackageManage.times = 0;
     this.editPackageManage.isShow = true;
   }
 
@@ -272,6 +284,7 @@ export default class PackageManage extends Vue {
         this.changeFilteredData();
       } else {
         operationFailMsg('获取数据失败');
+        operationFailMsg(res.msg);
       }
     });
   }
@@ -301,7 +314,8 @@ export default class PackageManage extends Vue {
           detail: item.detail,
           type: item.type,
           name: item.name,
-          money: item.money
+          money: item.money,
+          times: item.times
         });
       }
     }
@@ -310,7 +324,7 @@ export default class PackageManage extends Vue {
 
   beforeMount() {
     let screenWidth: number = window.screen.availWidth;
-    let tableWidthList: number[] = [107, 200, 200, 200, 200, 430, 250];  // 总的1600
+    let tableWidthList: number[] = [100, 237, 170, 170, 170, 160, 330, 250];  // 总的1600
     for (let i = 0; i < this.columns.length; i++) {
       this.columns[i].width = tableWidthList[i] * (screenWidth / 1920);
     }

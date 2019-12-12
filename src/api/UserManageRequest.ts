@@ -29,6 +29,7 @@ class UserManageRequest extends Request {
     sex: string;
     rareMoney: number;
     score: number;
+    realName: string;
   }) {
     return this.post('/user/modifyUser', data);
   }
@@ -58,6 +59,7 @@ class UserManageRequest extends Request {
     sex: string;
     rareMoney: number;
     score: number;
+    realName: string;
   }) {
     return this.post('/user/addUser', data);
   }

@@ -5,7 +5,7 @@
 .reservation-manage-container {
   position: relative;
   width: 100%;
-  padding: 0px 20px 20px 20px;
+  padding: 0px 20px 100px;
   border-radius: 8px;
   min-height: 95vh;
 
@@ -52,6 +52,7 @@
       :total="filteredData.length"
       class="turn-page-container"
       @on-change="changePage"
+      :current="page"
     />
     <Modal
       v-model="deleteModal.isShow"
@@ -176,6 +177,7 @@ export default class ReservationManage extends Vue {
   }
 
   searchOrder(value: string) {
+    this.page = 1;
     this.searchValue = value;
     this.changeFilteredData();
   }

@@ -6,8 +6,9 @@
   height: 100vh;
   overflow: hidden;
   background-color: #000;
-  background-size: 100%;
+  background-size: cover;
   background-position: center center;
+  background-repeat: no-repeat;
 
   .login-main-container {
     @include clear-float;
@@ -128,7 +129,7 @@ export default class Login extends Vue {
         setUserName(this.account);
         this.$router.replace('/index');
       } else {
-        operationFailMsg('请填写正确的账号和密码');
+        operationFailMsg(res.msg);
       }
     });
   }

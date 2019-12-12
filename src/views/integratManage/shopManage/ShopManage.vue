@@ -5,9 +5,9 @@
 .shop-manage-container {
   position: relative;
   width: 100%;
-  padding: 0px 20px 20px 20px;
   border-radius: 8px;
   min-height: 95vh;
+  padding: 0px 20px 100px;
 
   .operate-container {
     @include vertical-center;
@@ -54,6 +54,7 @@
     <Page
       class="turn-page-container"
       :total="filteredData.length"
+      :current="page"
       @on-change="changePage"
     />
     <Modal
@@ -69,6 +70,7 @@
       :intro="editInfo.intro"
       :id="editInfo.id"
       :status="editInfo.status"
+      :uid="editInfo.uid"
       @on-close="closeLayer"
       @on-renew="getShopList"
     ></edit-store-layer>
@@ -108,12 +110,16 @@ export default class ShopManage extends Vue {
       key: 'name'
     },
     {
-      title: '详细信息',
-      key: 'message'
-    },
-    {
       title: '门店状态',
       key: 'status'
+    },
+    {
+      title: '门锁设备号',
+      key: 'uid'
+    },
+    {
+      title: '详细信息',
+      key: 'message'
     },
     {
       title: '操作',
@@ -122,11 +128,12 @@ export default class ShopManage extends Vue {
   ];
 
   displayData: {
-    id: number;
     index: number;
     name: string;
+    id: number;
     message: string;
     status: string;
+    uid: string;
   }[] = [
 
   ];
@@ -137,6 +144,7 @@ export default class ShopManage extends Vue {
     id: number;
     address: string;
     status: number;
+    uid: string;
   }[] = [
 
   ];
@@ -160,7 +168,8 @@ export default class ShopManage extends Vue {
     name: '',
     intro: '',
     status: -1,
-    id: -1
+    id: -1,
+    uid: ''
   };
 
   closeLayer() {
@@ -173,6 +182,7 @@ export default class ShopManage extends Vue {
     this.editInfo.name = this.displayData[index].name;
     this.editInfo.intro = this.displayData[index].message;
     this.editInfo.id = this.displayData[index].id;
+    this.editInfo.uid = this.displayData[index].uid;
     this.isShowEditStore = true;
   }
 
@@ -186,6 +196,7 @@ export default class ShopManage extends Vue {
   }
 
   searchShop(value: string) {
+    this.page = 1;
     this.searchValue = value;
     this.changeFilteredData();
   }
@@ -195,6 +206,7 @@ export default class ShopManage extends Vue {
     this.editInfo.name = '';
     this.editInfo.intro = '';
     this.editInfo.id = -1;
+    this.editInfo.uid = '';
     this.isShowEditStore = true;
   }
 
@@ -216,6 +228,7 @@ export default class ShopManage extends Vue {
         this.getShopList();
       } else {
         operationFailMsg('删除店铺失败');
+        operationFailMsg(res.msg);
       }
     });
   }
@@ -245,7 +258,8 @@ export default class ShopManage extends Vue {
         index: this.filteredData[i].index,
         message: this.filteredData[i].address,
         name: this.filteredData[i].name,
-        status: this.filteredData[i].status == 1 ? '营业中' : '停业'
+        status: this.filteredData[i].status == 1 ? '营业中' : '停业',
+        uid: this.filteredData[i].uid
       });
     }
   }
@@ -261,6 +275,7 @@ export default class ShopManage extends Vue {
           address: this.allShopList[i].address,
           status: this.allShopList[i].status,
           name: this.allShopList[i].name,
+          uid: this.allShopList[i].uid
         });
       }
     }
@@ -269,7 +284,7 @@ export default class ShopManage extends Vue {
 
   beforeMount() {
     let screenWidth: number = window.screen.availWidth;
-    let tableWidthList: number[] = [157, 303, 709, 160, 270];  // 总的1600
+    let tableWidthList: number[] = [100, 260, 160, 250, 559, 270];  // 总的1600
     for (let i = 0; i < this.columns.length; i++) {
       this.columns[i].width = tableWidthList[i] * (screenWidth / 1920);
     }

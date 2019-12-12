@@ -17,7 +17,7 @@
     width: 100%;
 
     .item-input {
-      width:560px;
+      width:540px;
       height:36px;
       background:rgba(255,255,255,1);
       border:1px solid rgba(198,198,198,1);
@@ -29,7 +29,7 @@
     }
 
     .text-area {
-      width:560px;
+      width:540px;
       height:160px;
       background:rgba(255,255,255,1);
       border:1px solid rgba(198,198,198,1);
@@ -46,6 +46,11 @@
     position: relative;
     height: 48px;
     margin-top: 20px;
+  }
+
+  .item-key {
+    width: 90px;
+    text-align: start;
   }
 }
 </style>
@@ -66,6 +71,14 @@
         />
       </div>
       <div class="item-container">
+        <span class="item-key">门锁设备号</span>
+        <input
+          class="item-input"
+          v-model="localUid"
+          @input="limitUid"
+        />
+      </div>
+      <div class="item-container">
         <span class="item-key">详细信息</span>
         <textarea
           class="text-area"
@@ -77,7 +90,7 @@
         <span class="item-key">营业状态</span>
         <RadioGroup v-model="storeStatus" style="margin-left: .2rem">
           <Radio :label="isOpenStatus"></Radio>
-          <Radio :label="isCloseStaus" style="margin-left: .2rem"></Radio>
+          <Radio :label="isCloseStatus" style="margin-left: .2rem"></Radio>
         </RadioGroup>
       </div>
       <div class="button-container">
@@ -104,9 +117,10 @@
         @on-ok="confirmHandler"
       >
         <p v-if="isCreate">确定增加门店: </p>
-        <p v-else>确定将门店修改为: </p>
+        <p v-else>确定修改门店信息: </p>
         <p>门店名: <span style="font-weight: bold;color: #418c5f;font-size: .2rem">{{ localName }}</span></p>
         <p>门店详情: <span style="font-weight: bold;color: #418c5f;font-size: .2rem">{{ localIntro }}</span></p>
+        <p>门锁设备号: <span style="font-weight: bold;color: #418c5f;font-size: .2rem">{{ localUid }}</span></p>
         <p v-if="!isCreate">门店状态: <span style="font-weight: bold;color: #418c5f;font-size: .2rem">{{ storeStatus }}</span></p>
       </Modal>
     </div>
@@ -135,17 +149,21 @@ export default class EditStoreLayer extends Vue {
 
   @Prop(String) status!: string;
 
+  @Prop(String) uid!: string;
+
   title: string = '编辑门店信息';
 
   isOpenStatus: string = '营业中';
 
-  isCloseStaus: string = '停业';
+  isCloseStatus: string = '停业';
 
   isCreate: boolean = false;
 
   localName: string = '';
 
   localIntro: string = '';
+
+  localUid: string = '';
 
   storeStatus: string = '';
 
@@ -161,7 +179,7 @@ export default class EditStoreLayer extends Vue {
   };
 
   showCancelModal() {
-    if (this.localName != this.name || this.localIntro != this.intro) {
+    if (this.localName != this.name || this.localIntro != this.intro || this.localUid != this.uid) {
       this.cancelModal.isShow = true;
     } else {
       this.cancelHander();
@@ -196,6 +214,10 @@ export default class EditStoreLayer extends Vue {
     this.localIntro = limitString(this.localIntro, 100);
   }
 
+  limitUid() {
+    this.localUid = limitString(this.localUid, 100);
+  }
+
   renewHandler() {
     this.$emit('on-renew');
     this.cancelHander();
@@ -208,7 +230,8 @@ export default class EditStoreLayer extends Vue {
       shopManage.addStore({
         storeAddress: this.localIntro,
         storeName: this.localName,
-        storeStatus: 0
+        storeStatus: 0,
+        uid: this.localUid
       }).then(res => {
         this.isLoading = false;
         if (res.isSuccess) {
@@ -223,7 +246,8 @@ export default class EditStoreLayer extends Vue {
         storeId: this.id,
         storeName: this.localName,
         storeAddress: this.localIntro,
-        storeStatus: this.storeStatus == this.isOpenStatus ? 1 : 0
+        storeStatus: this.storeStatus == this.isOpenStatus ? 1 : 0,
+        uid: this.localUid
       }).then(res => {
         this.isLoading = false;
         if (res.isSuccess) {
@@ -243,13 +267,14 @@ export default class EditStoreLayer extends Vue {
     }
     if (this.status == this.isOpenStatus) {
       this.storeStatus = this.isOpenStatus;
-    } else if (this.status == this.isCloseStaus) {
-      this.storeStatus = this.isCloseStaus;
+    } else if (this.status == this.isCloseStatus) {
+      this.storeStatus = this.isCloseStatus;
     }
     this.localIntro = this.intro || '';
     this.localName = this.name || '';
+    this.localUid = this.uid || '';
     if (this.storeStatus.length == 0) {
-      this.storeStatus = this.status == this.isOpenStatus ? this.isOpenStatus : this.isCloseStaus;
+      this.storeStatus = this.status == this.isOpenStatus ? this.isOpenStatus : this.isCloseStatus;
     }
   }
 }

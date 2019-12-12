@@ -4,7 +4,7 @@
 .shop-manage-container {
   position: relative;
   width: 100%;
-  padding: 0px 20px 20px 20px;
+  padding: 0px 20px 100px;
   border-radius: 8px;
   min-height: 95vh;
 
@@ -53,6 +53,7 @@
     <Page
       class="turn-page-container"
       :total="filteredData.length"
+      :current="page"
       @on-change="changePage"
     />
     <Modal
@@ -91,6 +92,8 @@ import {shopRequest} from "@/api/ShopRequest";
 import {operationFailMsg, operationSuccessMsg} from "@/utils/shared/message";
 import {roomManage} from "@/store/modules/RoomManage";
 import EditRoomLayer from "@/views/integratManage/shopManage/roomManage/editRoomLayer/EditRoomLayer.vue";
+import {routeManager} from "@/store/modules/RouteManager";
+import {isUndef} from "@/utils/shared";
 @Component({
   components: {EditRoomLayer, WordButton, CustomTable, CustomHeader}
 })
@@ -198,6 +201,7 @@ export default class RoomManage extends Vue {
   }
 
   searchShop(value: string) {
+    this.page = 1;
     this.searchValue = value;
     this.changeFilteredData();
   }
@@ -238,6 +242,7 @@ export default class RoomManage extends Vue {
         this.changeFilteredData();
       } else {
         operationFailMsg('获取房间列表失败');
+        operationFailMsg(res.msg);
       }
     });
   }
@@ -259,8 +264,8 @@ export default class RoomManage extends Vue {
     let count = 1;
     for (let i = 0; i < this.roomList.length; i++) {
       let item = this.roomList[i];
-      if (item.roomType.indexOf(this.searchValue) != -1
-        || item.roomId.indexOf(this.searchValue) != -1
+      if ((!isUndef(item.roomType) && item.roomType.indexOf(this.searchValue) != -1)
+        || (!isUndef(item.roomId) && item.roomId.indexOf(this.searchValue) != -1)
         || this.searchValue.length == 0) {
         this.filteredData.push({
           index: count++,
@@ -304,6 +309,13 @@ export default class RoomManage extends Vue {
         name: '门店管理'
       });
     }
+    routeManager.replaceIndexBreadcrumb({
+      index: 2,
+      newValue: {
+        url: `/index/integratemanage/shopmanage/${this.storeId}`,
+        name: '房间管理'
+      }
+    });
     this.getStoreInfo();
     this.getRoomList();
   }

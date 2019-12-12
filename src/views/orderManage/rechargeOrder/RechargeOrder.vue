@@ -5,7 +5,7 @@
 .shop-manage-container {
   position: relative;
   width: 100%;
-  padding: 0px 20px 20px 20px;
+  padding: 0px 20px 100px;
   border-radius: 8px;
   min-height: 95vh;
 
@@ -52,6 +52,7 @@
     </custom-table>
     <Page
       :total="filteredData.length"
+      :current="page"
       class="turn-page-container"
       @on-change="changePage"
     />
@@ -172,6 +173,7 @@ export default class RechargeOrder extends Vue {
   pageIsLoading: boolean = false;
 
   searchOrder(value: string) {
+    this.page = 1;
     this.searchValue = value;
     this.changeFilteredData();
   }

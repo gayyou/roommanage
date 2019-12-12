@@ -5,7 +5,7 @@
 .package-manage-container {
   position: relative;
   width: 100%;
-  padding: 0px 20px 20px 20px;
+  padding: 0px 20px 100px;
   border-radius: 8px;
   min-height: 95vh;
 
@@ -63,6 +63,7 @@
     </custom-table>
     <Page
       :total="filteredData.length"
+      :current="page"
       class="turn-page-container"
       @on-change="changePage"
     />
@@ -226,6 +227,7 @@ export default class RefundManage extends Vue {
   pageIsLoading: boolean = false;
 
   searchUser(value: string) {
+    this.page = 1;
     this.searchValue = value;
     this.changeFilteredData();
   }
@@ -284,11 +286,11 @@ export default class RefundManage extends Vue {
   }
 
   deleteHandler() {
-    if (this.deleteReId == -1) {
+    if (this.deleteModal.id == -1) {
       return ;
     }
     refundManage.deleteRefund({
-      reId: this.deleteReId
+      reId: this.deleteModal.id
     }).then(res => {
       if (res.isSuccess) {
         operationSuccessMsg('删除退款记录成功');

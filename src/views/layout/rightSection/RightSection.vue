@@ -6,7 +6,7 @@
 
   position: relative;
   flex: 1;
-  padding-bottom: .4rem;
+  padding-bottom: .3rem;
 
   .right-section-head {
     @include clear-float;

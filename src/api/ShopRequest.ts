@@ -16,6 +16,7 @@ class ShopRequest extends Request {
     storeName: string;
     storeAddress: string;
     storeStatus: number;
+    uid: string;
   }) {
     return this.post('/store/addStore', data);
   }
@@ -25,6 +26,7 @@ class ShopRequest extends Request {
     storeAddress: string;
     storeStatus: number;
     storeId: number;
+    uid: string;
   }) {
     return this.post('/store/modifyStore', data);
   }

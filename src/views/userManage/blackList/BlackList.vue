@@ -5,7 +5,7 @@
 .package-manage-container {
   position: relative;
   width: 100%;
-  padding: 0px 20px 20px 20px;
+  padding: 0px 20px 100px;
   border-radius: 8px;
   min-height: 95vh;
 
@@ -56,6 +56,7 @@
     </custom-table>
     <Page
       :total="filteredData.length"
+      :current="page"
       class="turn-page-container"
       @on-change="changePage"
     />
@@ -66,6 +67,7 @@
     >
       <p>确定删除用户：</p>
       <p>用户名：<span style="color:rgba(65,140,95,1);font-weight: bold">{{ deleteModal.name }}</span></p>
+      <p>真实姓名：<span style="color:rgba(65,140,95,1);font-weight: bold">{{ deleteModal.realName }}</span></p>
       <p>用户电话：<span style="color:rgba(65,140,95,1);font-weight: bold">{{ deleteModal.phone }}</span></p>
       <p>用户余额：<span style="color:rgba(65,140,95,1);font-weight: bold">{{ deleteModal.money }}</span></p>
       <p>用户积分：<span style="color:rgba(65,140,95,1);font-weight: bold">{{ deleteModal.score }}</span></p>
@@ -79,6 +81,7 @@
     >
       <p>将用户移出黑名单：</p>
       <p>用户名：<span style="color:rgba(65,140,95,1);font-weight: bold">{{ addToBlackListModal.name }}</span></p>
+      <p>真实姓名：<span style="color:rgba(65,140,95,1);font-weight: bold">{{ addToBlackListModal.realName }}</span></p>
       <p>用户电话：<span style="color:rgba(65,140,95,1);font-weight: bold">{{ addToBlackListModal.phone }}</span></p>
       <p>用户余额：<span style="color:rgba(65,140,95,1);font-weight: bold">{{ addToBlackListModal.money }}</span></p>
       <p>用户积分：<span style="color:rgba(65,140,95,1);font-weight: bold">{{ addToBlackListModal.score }}</span></p>
@@ -116,8 +119,12 @@ export default class BlackList extends Vue {
       key: 'index'
     },
     {
-      title: '用户名',
+      title: '微信昵称',
       key: 'name'
+    },
+    {
+      title: '真实姓名',
+      key: 'realName'
     },
     {
       title: '电话',
@@ -153,6 +160,7 @@ export default class BlackList extends Vue {
     birthday: string;
     sex: string;
     url: string;
+    realName: string;
   }[] = [
 
   ];
@@ -169,6 +177,7 @@ export default class BlackList extends Vue {
     job: string;
     birthday: string;
     url: string;
+    realName: string;
   }[] = [
 
   ];
@@ -196,6 +205,7 @@ export default class BlackList extends Vue {
   pageIsLoading: boolean = false;
 
   searchUser(value: string) {
+    this.page = 1;
     this.searchValue = value;
     this.changeFilteredData();
   }
@@ -232,7 +242,8 @@ export default class BlackList extends Vue {
       phone: item.phone,
       target: item.target,
       money: item.money,
-      score: item.score
+      score: item.score,
+      realName: item.realName
     }
     this.addToBlackUserId = this.displayData[index].id;
     this.addToBlackPhone = this.displayData[index].phone;
@@ -250,7 +261,8 @@ export default class BlackList extends Vue {
       phone: item.phone,
       target: item.target,
       money: item.money,
-      score: item.score
+      score: item.score,
+      realName: item.realName
     }
     this.deleteUserId = this.displayData[index].id;
   }
@@ -279,6 +291,7 @@ export default class BlackList extends Vue {
         this.changeFilteredData();
       } else {
         operationFailMsg('获取数据失败');
+        operationFailMsg(res.msg);
       }
     });
   }
@@ -314,7 +327,8 @@ export default class BlackList extends Vue {
           url: item.url,
           id: item.id,
           money: item.money,
-          name: item.name
+          name: item.name,
+          realName: item.realName
         });
       }
     }
@@ -323,7 +337,7 @@ export default class BlackList extends Vue {
 
   beforeMount() {
     let screenWidth: number = window.screen.availWidth;
-    let tableWidthList: number[] = [107, 200, 200, 200, 200, 430, 250];  // 总的1600
+    let tableWidthList: number[] = [100, 180, 180, 200, 200, 200, 280, 250];  // 总的1600
     for (let i = 0; i < this.columns.length; i++) {
       this.columns[i].width = tableWidthList[i] * (screenWidth / 1920);
     }

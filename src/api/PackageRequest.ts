@@ -12,6 +12,7 @@ class PackageRequest extends Request {
     mealType: string;
     mealMoney: number;
     mealDesc: string;
+    usedTime: number;
   }) {
     return this.post('/meal/addMeal', data);
   }
@@ -23,6 +24,7 @@ class PackageRequest extends Request {
     mealType: string;
     mealMoney: number;
     mealDesc: string;
+    usedTime: number;
   }) {
     return this.post('/meal/modifyMeal', data);
   }

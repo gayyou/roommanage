@@ -4,12 +4,11 @@
 .edit-package-container {
   position: relative;
   width:720px;
-  height:510px;
   background:rgba(255,255,255,1);
   box-shadow:0px 3px 6px rgba(0,0,0,0.16);
   opacity:1;
   border-radius:8px;
-  padding: 0 20px 0 20px;
+  padding: 0 20px 20px 20px;
 
   .item-container {
     @include clear-float;
@@ -100,6 +99,12 @@
           <InputNumber :max="1000" :min="0" v-model="localDays" style="margin-left: 0.2rem;width: 2.2rem"></InputNumber>
         </div>
       </div>
+      <div class="item-container">
+        <div class="half-section">
+          <span class="item-key" style="margin-top: .05rem">使用次数</span>
+          <InputNumber :max="1000" :min="0" v-model="localTimes" style="margin-left: 0.2rem;width: 2.2rem"></InputNumber>
+        </div>
+      </div>
       <div class="button-container">
         <Button
           @click="showCancelModal"
@@ -130,6 +135,7 @@
         <p>套餐详情: <span style="font-weight: bold;color: #418c5f;font-size: .2rem">{{ localDetail }}</span></p>
         <p>套餐金额: <span style="font-weight: bold;color: #418c5f;font-size: .2rem">{{ localMoney }}</span></p>
         <p>套餐天数: <span style="font-weight: bold;color: #418c5f;font-size: .2rem">{{ localDays }}</span></p>
+        <p>使用次数: <span style="font-weight: bold;color: #418c5f;font-size: .2rem">{{ localTimes }}</span></p>
       </Modal>
     </div>
   </global-layer>
@@ -160,6 +166,8 @@ export default class EditPackage extends Vue {
 
   @Prop(Number) days!: number;
 
+  @Prop(Number) times!: number;
+
   localName: string = '';
 
   localType: string = '';
@@ -169,6 +177,8 @@ export default class EditPackage extends Vue {
   localMoney: number = 0;
 
   localDays: number = 0;
+
+  localTimes: number = 0;
 
   title: string = '编辑套餐';
 
@@ -222,7 +232,8 @@ export default class EditPackage extends Vue {
         mealDesc: this.localDetail,
         mealMoney: this.localMoney,
         mealName: this.localName,
-        mealType: this.localType
+        mealType: this.localType,
+        usedTime: this.localTimes
       }).then(res => {
         this.isLoading = false;
         if (res.isSuccess) {
@@ -240,7 +251,8 @@ export default class EditPackage extends Vue {
         mealDesc: this.localDetail,
         mealMoney: this.localMoney,
         mealName: this.localName,
-        mealType: this.localType
+        mealType: this.localType,
+        usedTime: this.localTimes
       }).then(res => {
         this.isLoading = false;
         if (res.isSuccess) {
@@ -284,9 +296,18 @@ export default class EditPackage extends Vue {
       operationFailMsg('请输入大于0的天数');
       return ;
     }
+    if (this.localTimes <= 0) {
+      operationFailMsg('请输入大于0的使用次数')
+      return ;
+    }
     let daysString = this.localDays.toString();
     if (!/^[1-9]+[0-9]*]*$/.test(daysString)) {
       operationFailMsg('请输入整数的天数');
+      return ;
+    }
+    let timeString = this.localTimes.toString();
+    if (!/^[1-9]+[0-9]*]*$/.test(timeString)) {
+      operationFailMsg('请输入整数的使用次数');
       return ;
     }
     this.confirmModal.isShow = true;
@@ -302,6 +323,7 @@ export default class EditPackage extends Vue {
     this.localType = this.type;
     this.localMoney = this.money;
     this.localDays = this.days;
+    this.localTimes = this.times;
   }
 }
 </script>

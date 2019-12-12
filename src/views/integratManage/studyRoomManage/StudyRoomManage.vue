@@ -5,7 +5,7 @@
 .study-room-container {
   position: relative;
   width: 100%;
-  padding: 0px 20px 20px 20px;
+  padding: 0px 20px 100px;
   border-radius: 8px;
   min-height: 90vh;
 
@@ -152,6 +152,7 @@ export default class StudyRoomManage extends Vue {
                     + (minute < 10 ? '0' + minute : minute);
       } else {
         operationFailMsg('获取提前开门时间失败');
+        operationFailMsg(res.msg);
       }
     });
   }

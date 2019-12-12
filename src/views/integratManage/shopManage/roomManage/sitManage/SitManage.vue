@@ -5,7 +5,7 @@
 .shop-manage-container {
   position: relative;
   width: 100%;
-  padding: 0px 20px 20px 20px;
+  padding: 0px 20px 100px;
   border-radius: 8px;
   min-height: 95vh;
 
@@ -73,6 +73,7 @@
     ></edit-sit-money>
     <Page
       :total="filteredData.length"
+      :current="page"
       class="turn-page-container"
       @on-change="changePage"
     />
@@ -107,6 +108,7 @@ import {roomManage} from "@/store/modules/RoomManage";
 import {sitManage} from "@/store/modules/SitManage";
 import EditSitLayer from "@/views/integratManage/shopManage/roomManage/sitManage/editSitLayer/EditSitLayer.vue";
 import EditSitMoney from "@/views/integratManage/shopManage/roomManage/sitManage/editSitMoney/EditSitMoney.vue";
+import {routeManager} from "@/store/modules/RouteManager";
 @Component({
   components: {EditSitMoney, EditSitLayer, WordButton, CustomTable, CustomHeader}
 })
@@ -229,6 +231,7 @@ export default class SitManage extends Vue {
   }
 
   searchShop(value: string) {
+    this.page = 1;
     this.searchValue = value;
     this.changeFilteredData();
   }
@@ -274,6 +277,7 @@ export default class SitManage extends Vue {
         this.changeFilteredData();
       } else {
         operationFailMsg('获取房间列表失败');
+        operationFailMsg(res.msg);
       }
     });
   }
@@ -347,6 +351,20 @@ export default class SitManage extends Vue {
         name: '门店管理'
       });
     }
+    routeManager.replaceIndexBreadcrumb({
+      index: 2,
+      newValue: {
+        url: `/index/integratemanage/shopmanage/${this.storeId}`,
+        name: '房间管理'
+      }
+    });
+    routeManager.replaceIndexBreadcrumb({
+      index: 3,
+      newValue: {
+        url: `/index/integratemanage/shopmanage/${this.storeId}/${this.roomId}${this.roomType}`,
+        name: '座位管理'
+      }
+    });
     this.getStoreInfo();
   }
 }

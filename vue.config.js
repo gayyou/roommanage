@@ -1,8 +1,11 @@
 const webpack = require("webpack");
 const path = require('path');
+const WebpackAliyunOss = require('webpack-aliyun-oss');
+const oss = require('./oss-config.js');
 
 module.exports = {
-  publicPath: process.env.NODE_ENV === 'production' ? './' : './',
+  publicPath: './',
+  // publicPath: process.env.NODE_ENV === 'production' ? 'https://qg-oss-static.oss-cn-shenzhen.aliyuncs.com/kaola-static/': './',
   lintOnSave: false,
   productionSourceMap: process.env.NODE_ENV !== 'production',
   // 下面为代理服务器配置
@@ -26,6 +29,21 @@ module.exports = {
       ['@assets'] = path.join(__dirname, "src/assets");
     config.resolve.alias
       ['@views'] = path.join(__dirname, "src/views");
+    if (process.env.NODE_ENV === 'production') {
+      // 接下来是进行oss自动上传处理
+      let webpackAliyunOss = [
+        // new WebpackAliyunOss({
+        //   form: ['./dist/**', '!./dist/**/*.html'],  // 将文件进行处理后上传的文件夹
+        //   dist: 'kaola-static',
+        //   accessKeyId: oss.accessKeyId,
+        //   accessKeySecret: oss.accessKeySecret,
+        //   region: oss.region,
+        //   bucket: oss.bucket,
+        //   test: true
+        // })
+      ];
+      // config.plugins = [...config.plugins, ...webpackAliyunOss ];
+    }
   },
   // 构建时开启多进程处理 babel 编译
   // 是否为 Babel 或 TypeScript 使用 thread-loader

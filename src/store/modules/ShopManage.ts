@@ -15,6 +15,7 @@ class ShopManage extends VuexModule {
     id: number;
     address: string;
     status: number;
+    uid: string;
   }[] = [];
 
   @Mutation
@@ -32,6 +33,7 @@ class ShopManage extends VuexModule {
         id: number;
         address: string;
         status: number;
+        uid: string;
       }[] = [];
 
       let resultData: any[] = result.data;
@@ -42,8 +44,9 @@ class ShopManage extends VuexModule {
           status: resultData[i].storeStatus,
           name: resultData[i].storeName,
           id: resultData[i].storeId,
-          address: resultData[i].storeAddress
-        })
+          address: resultData[i].storeAddress,
+          uid: resultData[i].uid
+        });
       }
 
       this.setShopList(list);
@@ -64,6 +67,7 @@ class ShopManage extends VuexModule {
     storeName: string;
     storeAddress: string;
     storeStatus: number;
+    uid: string;
   }) {
     return getResultResData(await shopRequest.addStore(data));
   }
@@ -81,6 +85,7 @@ class ShopManage extends VuexModule {
     storeAddress: string;
     storeStatus: number;
     storeId: number;
+    uid: string;
   }) {
     return getResultResData(await shopRequest.changeStore(data));
   }

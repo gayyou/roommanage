@@ -21,6 +21,7 @@ class UserListManage extends VuexModule {
     sex: string;
     job: string;
     url: string;
+    realName: string;
     birthday: string;
   }[] = [];
 
@@ -34,6 +35,7 @@ class UserListManage extends VuexModule {
     sex: string;
     job: string;
     url: string;
+    realName: string;
     birthday: string;
   }[] = [];
 
@@ -49,6 +51,7 @@ class UserListManage extends VuexModule {
     job: string;
     url: string;
     birthday: string;
+    realName: string;
   }[]) {
     this.userInfoList = list;
   }
@@ -65,6 +68,7 @@ class UserListManage extends VuexModule {
     job: string;
     url: string;
     birthday: string;
+    realName: string;
   }[]) {
     this.blackListInfoList = list;
   }
@@ -84,6 +88,7 @@ class UserListManage extends VuexModule {
         sex: string;
         birthday: string;
         url: string;
+        realName: string;
       }[] = [];
       for (let i = 0; i < result.data.length; i++) {
         let item = result.data[i];
@@ -97,7 +102,8 @@ class UserListManage extends VuexModule {
           target: item.target,
           name: item.name,
           score: item.score,
-          url: item.url
+          url: item.url,
+          realName: item.realName
         })
       }
       this.setUserInfoList(resultArr);
@@ -120,6 +126,7 @@ class UserListManage extends VuexModule {
         sex: string;
         birthday: string;
         url: string;
+        realName: string;
       }[] = [];
       for (let i = 0; i < result.data.length; i++) {
         let item = result.data[i];
@@ -133,7 +140,8 @@ class UserListManage extends VuexModule {
           target: item.target,
           name: item.name,
           score: item.score,
-          url: item.url
+          url: item.url,
+          realName: item.realName
         })
       }
       this.setBlackList(resultArr);
@@ -179,6 +187,7 @@ class UserListManage extends VuexModule {
     sex: string;
     rareMoney: number;
     score: number;
+    realName: string;
   }) {
     return getResultResData(await userManageRequest.updateUserInfo(data));
   }
@@ -190,6 +199,7 @@ class UserListManage extends VuexModule {
     sex: string;
     rareMoney: number;
     score: number;
+    realName: string;
   }) {
     return getResultResData(await userManageRequest.addUser(data));
   }
